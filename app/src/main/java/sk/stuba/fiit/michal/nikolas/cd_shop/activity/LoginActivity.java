@@ -21,5 +21,6 @@ public class LoginActivity extends AppCompatActivity {
 
         setSupportActionBar(mToolbar);
         //getSupportActionBar().setDisplayShowHomeEnabled(true);
+        //Testing new branch :D
     }
 }
