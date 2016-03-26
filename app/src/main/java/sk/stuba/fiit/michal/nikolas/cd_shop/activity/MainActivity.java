@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frame, new Albums()).commit();
+            getSupportActionBar().setTitle("Home");
         }
     }
 
@@ -87,24 +88,29 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         Fragment fragment = null;
+        String title = "";
         if (id == R.id.nav_camera) {
             // Handle the camera action
             Log.i("test","testujem1");
+            title = "Albums";
             fragment = new Albums();
         } else if (id == R.id.nav_gallery) {
             Log.i("test","testujem2");
+            title = "Decades";
             fragment = new Decades();
         } else if (id == R.id.nav_slideshow) {
             Log.i("test","testujem3");
+            title = "Genres";
             fragment = new Genres();
         } else if (id == R.id.nav_manage) {
             Log.i("test","testujem4");
+            title = "Regions";
             fragment = new Regions();
         }
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.frame,fragment);
         fragmentTransaction.commit();
-
+        getSupportActionBar().setTitle(title);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
