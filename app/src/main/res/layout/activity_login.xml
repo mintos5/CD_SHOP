@@ -15,7 +15,8 @@
         android:layout_height="160dp"
         android:id="@+id/imageView"
         android:src="@drawable/logo"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter"
+        android:contentDescription="Logo" />
 
     <EditText
         android:layout_width="match_parent"
@@ -41,5 +42,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/button"
         android:layout_gravity="center_horizontal"
-        android:text="@string/action_login" />
+        android:text="@string/action_login"
+        android:onClick="logMe" />
 </LinearLayout>

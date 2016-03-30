@@ -3,4 +3,17 @@
     <string name="action_search">Search</string>
     <string name="action_settings">Settings</string>
     <string name="action_login">Login</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="albums">Albums</string>
+    <string name="decades">Decades</string>
+    <string name="genres">Genres</string>
+    <string name="regions">Regions</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
