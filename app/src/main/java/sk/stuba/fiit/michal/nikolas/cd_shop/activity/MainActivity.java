@@ -26,6 +26,8 @@ import sk.stuba.fiit.michal.nikolas.cd_shop.Regions;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private Fragment oldfragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,8 +110,12 @@ public class MainActivity extends AppCompatActivity
             fragment = new Regions();
         }
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        if (oldfragment!=null) {
+            fragmentTransaction.remove(oldfragment);
+        }
         fragmentTransaction.replace(R.id.frame,fragment);
         fragmentTransaction.commit();
+        oldfragment = fragment;
         getSupportActionBar().setTitle(title);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

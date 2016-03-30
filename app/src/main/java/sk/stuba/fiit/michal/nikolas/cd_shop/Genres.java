@@ -34,7 +34,7 @@ public class Genres extends ListFragment implements AdapterView.OnItemClickListe
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ArrayAdapter adapter;
-        adapter = new ArrayAdapter<String>(getActivity(), R.layout.line, GenresEnum.getAllNames());
+        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, GenresEnum.getAllNames());
         setListAdapter(adapter);
         getListView().setOnItemClickListener(this);
     }
