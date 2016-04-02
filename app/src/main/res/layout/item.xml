@@ -12,20 +12,42 @@
         android:adjustViewBounds="true"
         android:contentDescription="@null"
         android:scaleType="centerCrop"
-        tools:src="@drawable/lol_guy"/>
+        tools:src="@drawable/cd_case"
+        android:src="@drawable/cd_case" />
 
-    <TextView
-        android:id="@+id/name"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:minHeight="@dimen/recycler_item_footer_height_min"
-        android:paddingBottom="@dimen/recycler_item_footer_padding"
-        android:paddingLeft="@dimen/recycler_item_footer_padding"
-        android:paddingRight="@dimen/recycler_item_footer_padding"
-        android:paddingTop="@dimen/recycler_item_footer_padding"
-        android:background="@color/colorAccent"
-        style="@style/TextAppearance.AppCompat.Subhead.Inverse"
-        tools:text="LOL Guy"/>
+        android:orientation="vertical"
+        android:layout_gravity="bottom">
 
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/recycler_item_footer_height_min"
+            android:paddingBottom="@dimen/recycler_item_footer_padding"
+            android:paddingLeft="@dimen/recycler_item_footer_padding"
+            android:paddingRight="@dimen/recycler_item_footer_padding"
+            android:paddingTop="@dimen/recycler_item_footer_padding"
+            android:background="#c8311b92"
+            style="@style/TextAppearance.AppCompat.Subhead.Inverse"
+            tools:text="LOL Guy"/>
+
+        <TextView
+            android:id="@+id/artist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:minHeight="@dimen/recycler_item_footer_height_min"
+            android:paddingBottom="@dimen/recycler_item_footer_padding"
+            android:paddingLeft="@dimen/recycler_item_footer_padding"
+            android:paddingRight="@dimen/recycler_item_footer_padding"
+            android:paddingTop="@dimen/recycler_item_footer_padding"
+            android:background="@color/colorAccent"
+            style="@style/TextAppearance.AppCompat.Subhead.Inverse"
+            tools:text="Artist"/>
+    </LinearLayout>
 </FrameLayout>

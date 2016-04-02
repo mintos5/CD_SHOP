@@ -1,0 +1,198 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context="sk.stuba.fiit.michal.nikolas.cd_shop.fragment.AlbumView">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top">
+
+        <!-- TODO: Update blank fragment layout -->
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="0.5"
+            android:id="@+id/imageView2"
+            android:src="@drawable/cd_case"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:onClick="showMe" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Artist:"
+                android:id="@+id/textView"
+                android:layout_alignBaseline="@+id/editTextArtist"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"/>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextArtist"
+                android:text="Simple plan"
+                android:textIsSelectable="false"
+                android:enabled="true"
+                android:editable="false"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/textView"
+                android:layout_toEndOf="@+id/textView" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Country:"
+                android:id="@+id/textView2"
+                android:layout_alignBaseline="@+id/editTextRegion"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextRegion"
+                android:text="Slovakia"
+                android:layout_below="@+id/editTextArtist"
+                android:layout_toRightOf="@+id/textView2"
+                android:layout_toEndOf="@+id/textView2"
+                android:editable="false" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Genre:"
+                android:id="@+id/textView3"
+                android:layout_alignBaseline="@+id/editTextGenre"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextGenre"
+                android:text="Pop"
+                android:layout_below="@+id/editTextRegion"
+                android:layout_toRightOf="@+id/textView3"
+                android:layout_toEndOf="@+id/textView3"
+                android:editable="false"
+                android:enabled="true" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Decade:"
+                android:id="@+id/textView4"
+                android:layout_alignBaseline="@+id/editTextDecade"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextDecade"
+                android:text="1990"
+                android:layout_below="@+id/editTextGenre"
+                android:layout_toRightOf="@+id/textView4"
+                android:layout_toEndOf="@+id/textView4"
+                android:editable="false" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Released:"
+                android:id="@+id/textView5"
+                android:layout_alignBaseline="@+id/editTextRLS"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/editTextRLS"
+                android:text="16.5.1990"
+                android:layout_below="@+id/editTextDecade"
+                android:layout_toRightOf="@+id/textView5"
+                android:layout_toEndOf="@+id/textView5"
+                android:editable="false"
+                android:inputType="datetime" />
+
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Price"
+            android:id="@+id/textView6"
+            android:layout_alignBaseline="@+id/editTextPrice"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingLeft="10dp" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/editTextPrice"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/textView6"
+            android:layout_toEndOf="@+id/textView6"
+            android:text="45€" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="In stock"
+            android:id="@+id/textView7"
+            android:layout_alignBaseline="@+id/editTextStock"
+            android:layout_toRightOf="@+id/editTextPrice"
+            android:layout_toEndOf="@+id/editTextPrice"
+            android:paddingLeft="20dp" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/editTextStock"
+            android:text="35"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/textView7"
+            android:layout_toEndOf="@+id/textView7" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sales TAG"
+            android:id="@+id/checkBox"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:paddingRight="10dp"
+            android:checked="true"
+            android:clickable="false" />
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -24,6 +24,16 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="sk.stuba.fiit.michal.nikolas.cd_shop.activity.LoginActivity" />
         </activity>
+        <activity
+            android:name=".activity.FullscreenAlbum"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_fullscreen_album"
+            android:parentActivityName=".activity.MainActivity"
+            android:theme="@style/FullscreenTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="sk.stuba.fiit.michal.nikolas.cd_shop.activity.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -10,6 +10,6 @@
     <dimen name="recycler_margin_horizontal">4dp</dimen>
     <dimen name="recycler_margin_vertical">4dp</dimen>
     <dimen name="recycler_layout_spacing">4dp</dimen>
-    <dimen name="recycler_item_footer_height_min">48dp</dimen>
-    <dimen name="recycler_item_footer_padding">16dp</dimen>
+    <dimen name="recycler_item_footer_height_min">32dp</dimen>
+    <dimen name="recycler_item_footer_padding">8dp</dimen>
 </resources>

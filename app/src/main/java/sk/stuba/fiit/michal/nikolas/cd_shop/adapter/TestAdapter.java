@@ -2,10 +2,13 @@ package sk.stuba.fiit.michal.nikolas.cd_shop.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Checkable;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -39,25 +42,56 @@ public class TestAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View gridView;
+        CheckableLayout gridView;
         LayoutInflater inflater;
         inflater = (LayoutInflater) LayoutInflater.from(context);
         if (convertView == null) {
-            gridView = new View(context);
-            gridView = inflater.inflate(R.layout.item,null);
+            gridView = new CheckableLayout(context);
 
             TextView txt = (TextView) gridView.findViewById(R.id.name);
             txt.setText("Test text");
-
+            TextView txt2 = (TextView) gridView.findViewById(R.id.artist);
+            txt2.setText("Tu bude text");
             ImageView imageView = (ImageView) gridView
                     .findViewById(R.id.comic_image);
-            imageView.setImageResource(R.drawable.lol_guy);
+            imageView.setImageResource(R.drawable.cd_case);
 
         }
         else
         {
-            gridView = (View) convertView;
+            gridView = (CheckableLayout) convertView;
         }
         return gridView;
+    }
+
+    public class CheckableLayout extends FrameLayout implements Checkable {
+
+        private boolean mChecked;
+
+        public CheckableLayout(Context context) {
+            super(context);
+            inflate(context, R.layout.item, this);
+        }
+
+        public void setChecked(boolean checked) {
+            mChecked = checked;
+            if (checked) {
+                setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            }
+            else {
+                setBackgroundColor(0);
+
+
+            }
+        }
+
+        public boolean isChecked() {
+            return mChecked;
+        }
+
+        public void toggle() {
+            setChecked(!mChecked);
+        }
+
     }
 }
