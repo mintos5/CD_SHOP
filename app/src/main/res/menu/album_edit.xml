@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_refresh"
-        app:showAsAction="never" />
+        android:id="@+id/action_modify"
+        android:title="Modify"
+        android:icon="@drawable/ic_edit_white"
+        app:showAsAction="ifRoom" />
 </menu>

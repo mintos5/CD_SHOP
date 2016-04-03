@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="sk.stuba.fiit.michal.nikolas.cd_shop.Genres">
+    tools:context=".fragment.Genres">
 
     <!-- TODO: Update blank fragment layout -->
 
