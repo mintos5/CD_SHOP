@@ -32,9 +32,10 @@
             android:paddingLeft="@dimen/recycler_item_footer_padding"
             android:paddingRight="@dimen/recycler_item_footer_padding"
             android:paddingTop="@dimen/recycler_item_footer_padding"
-            android:background="#c8311b92"
+            android:background="@color/colorPrimaryDarkTransparent"
             style="@style/TextAppearance.AppCompat.Subhead.Inverse"
-            tools:text="LOL Guy"/>
+            tools:text="LOL Guy"
+            android:autoText="false" />
 
         <TextView
             android:id="@+id/artist"
@@ -46,7 +47,7 @@
             android:paddingLeft="@dimen/recycler_item_footer_padding"
             android:paddingRight="@dimen/recycler_item_footer_padding"
             android:paddingTop="@dimen/recycler_item_footer_padding"
-            android:background="@color/colorAccent"
+            android:background="@color/colorPrimaryDarkTransparent"
             style="@style/TextAppearance.AppCompat.Subhead.Inverse"
             tools:text="Artist"/>
     </LinearLayout>

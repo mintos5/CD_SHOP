@@ -75,12 +75,17 @@ public class TestAdapter extends BaseAdapter {
 
         public void setChecked(boolean checked) {
             mChecked = checked;
+            TextView name = (TextView) this.findViewById(R.id.name);
+            TextView artist = (TextView) this.findViewById(R.id.artist);
             if (checked) {
                 setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                name.setBackgroundColor(getResources().getColor(R.color.colorAccentTransparent));
+                artist.setBackgroundColor(getResources().getColor(R.color.colorAccentTransparent));
             }
             else {
                 setBackgroundColor(0);
-
+                name.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDarkTransparent));
+                artist.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDarkTransparent));
 
             }
         }

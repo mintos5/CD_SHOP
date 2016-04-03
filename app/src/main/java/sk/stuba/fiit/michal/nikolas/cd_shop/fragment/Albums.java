@@ -15,12 +15,10 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
-import sk.stuba.fiit.michal.nikolas.cd_shop.model.GenresEnum;
 
 
 /**
@@ -94,7 +92,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.main, menu);
+        inflater.inflate(R.menu.list_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
