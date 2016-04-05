@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -41,17 +42,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public void logMe(View view) {
         // Login function with password check
-        ApiRequest test = new ApiRequest();
+        List<Album> albumList = new ArrayList<Album>();
+        ApiRequest test = new ApiRequest(albumList);
         test.execute("test");
-        try {
-            List<Album> album = (List<Album>) test.get();
-            for (int i=0; i <album.size();i++ )
-            System.out.println("albums_name: "+ album.get(i).getName() + "artist: "+ album.get(i).getArtist());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
 
         EditText login = (EditText) activity.findViewById(R.id.editTextLogin);
         EditText pass = (EditText) activity.findViewById(R.id.editTextPass);

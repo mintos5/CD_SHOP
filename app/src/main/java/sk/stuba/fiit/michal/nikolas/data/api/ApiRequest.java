@@ -23,6 +23,11 @@ import sk.stuba.fiit.michal.nikolas.data.model.Album;
  * Created by Nikolas on 1.4.2016.
  */
 public class ApiRequest extends AsyncTask<String, Void, List<Album>> {
+    private List<Album> albumList;
+
+    public ApiRequest(List<Album> albumList) {
+        this.albumList = albumList;
+    }
 
 
     @Override
@@ -51,7 +56,7 @@ public class ApiRequest extends AsyncTask<String, Void, List<Album>> {
 
             JSONObject parentObject = new JSONObject(finalJson);
             JSONArray parentArray = parentObject.getJSONArray("data");
-            List<Album> albumList = new ArrayList<>();
+            //albumList = new ArrayList<>();
             for (int i=0; i < parentArray.length(); i++){
                 JSONObject finalObject = parentArray.getJSONObject(i);
                 Album album = new Album();
@@ -76,7 +81,8 @@ public class ApiRequest extends AsyncTask<String, Void, List<Album>> {
 
     protected void onPostExecute(List<Album> result){
         super.onPostExecute(result);
-
+        for (int i=0; i <result.size();i++ )
+            System.out.println("albums_name: "+ result.get(i).getName() + "artist: "+ result.get(i).getArtist());
     }
 
 }
