@@ -3,6 +3,7 @@ package sk.stuba.fiit.michal.nikolas.cd_shop.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,7 +14,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
+import sk.stuba.fiit.michal.nikolas.data.api.ApiRequest;
+import sk.stuba.fiit.michal.nikolas.data.model.Album;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -34,6 +40,18 @@ public class LoginActivity extends AppCompatActivity {
 
     public void logMe(View view) {
         // Login function with password check
+        AsyncTask test = new ApiRequest();
+        test.execute("Ahoj");
+        try {
+            List<Album> album = (List<Album>) test.get();
+            for (int i=0; i <album.size();i++ )
+            System.out.println("albums_name: "+ album.get(i).getName() + "artist: "+ album.get(i).getArtist());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
         EditText login = (EditText) activity.findViewById(R.id.editTextLogin);
         EditText pass = (EditText) activity.findViewById(R.id.editTextPass);
         if (login.getText().toString().equals(pass.getText().toString())) {
