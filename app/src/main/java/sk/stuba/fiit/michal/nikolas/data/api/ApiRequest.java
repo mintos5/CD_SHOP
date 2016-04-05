@@ -83,6 +83,8 @@ public class ApiRequest extends AsyncTask<String, Void, List<Album>> {
         super.onPostExecute(result);
         for (int i=0; i <result.size();i++ )
             System.out.println("albums_name: "+ result.get(i).getName() + "artist: "+ result.get(i).getArtist());
+
+        //tu by som mohol pridat vytvorenie adaptera pre listView a nabindovat ho tam
     }
 
 }
