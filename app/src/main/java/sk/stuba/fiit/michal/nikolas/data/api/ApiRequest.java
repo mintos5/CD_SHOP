@@ -27,7 +27,7 @@ public class ApiRequest extends AsyncTask<String, Void, List<Album>> {
 
     @Override
     protected List<Album> doInBackground(String... params) {
-
+        Log.i("as","asdas2");
         HttpURLConnection connection = null;
         BufferedReader reader = null;
 
@@ -59,7 +59,6 @@ public class ApiRequest extends AsyncTask<String, Void, List<Album>> {
                 album.setArtist(finalObject.getString("artist"));
                 albumList.add(album);
             }
-
             return albumList;
 
         } catch (MalformedURLException e) {

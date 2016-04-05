@@ -12,7 +12,10 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.List;
+
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
+import sk.stuba.fiit.michal.nikolas.data.model.Album;
 
 /**
  * Created by micha on 27.03.2016.
@@ -20,14 +23,18 @@ import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 public class TestAdapter extends BaseAdapter {
 
     private Context context;
+    private List<Album> albumList;
 
-    public TestAdapter(Context context) {
+    public TestAdapter(Context context, List<Album> albumList) {
         this.context = context;
+        this.albumList = albumList;
     }
+
+
 
     @Override
     public int getCount() {
-        return 25;
+        return albumList.size();
     }
 
     @Override
@@ -49,9 +56,9 @@ public class TestAdapter extends BaseAdapter {
             gridView = new CheckableLayout(context);
 
             TextView txt = (TextView) gridView.findViewById(R.id.name);
-            txt.setText("Test text");
+            txt.setText(albumList.get(position).getName());
             TextView txt2 = (TextView) gridView.findViewById(R.id.artist);
-            txt2.setText("Tu bude text");
+            txt2.setText(albumList.get(position).getArtist());
             ImageView imageView = (ImageView) gridView
                     .findViewById(R.id.comic_image);
             imageView.setImageResource(R.drawable.cd_case);

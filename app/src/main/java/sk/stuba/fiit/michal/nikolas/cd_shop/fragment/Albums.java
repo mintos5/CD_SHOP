@@ -68,7 +68,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
         setHasOptionsMenu(true);
 
-        TestAdapter adapter = new TestAdapter(getActivity());
+        TestAdapter adapter = new TestAdapter(getActivity(),null);
         grid = (GridView) view.findViewById(R.id.gridview);
         grid.setAdapter(adapter);
         grid.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);

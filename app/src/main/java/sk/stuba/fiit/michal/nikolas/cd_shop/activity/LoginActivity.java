@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,8 +41,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void logMe(View view) {
         // Login function with password check
-        AsyncTask test = new ApiRequest();
-        test.execute("Ahoj");
+        ApiRequest test = new ApiRequest();
+        test.execute("test");
         try {
             List<Album> album = (List<Album>) test.get();
             for (int i=0; i <album.size();i++ )
