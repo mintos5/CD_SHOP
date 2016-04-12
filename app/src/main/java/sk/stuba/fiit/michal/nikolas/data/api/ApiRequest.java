@@ -1,7 +1,10 @@
 package sk.stuba.fiit.michal.nikolas.data.api;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.GridView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,25 +20,21 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import sk.stuba.fiit.michal.nikolas.cd_shop.R;
+import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
 import sk.stuba.fiit.michal.nikolas.data.model.Album;
 
 /**
  * Created by Nikolas on 1.4.2016.
  */
-public class ApiRequest extends AsyncTask<String, Void, List<Album>> {
-    private List<Album> albumList;
-
-    public ApiRequest(List<Album> albumList) {
-        this.albumList = albumList;
-    }
+public class ApiRequest {
 
 
-    @Override
-    protected List<Album> doInBackground(String... params) {
+    public static List<Album> getList(String... params) throws IOException {
         Log.i("as","asdas2");
         HttpURLConnection connection = null;
         BufferedReader reader = null;
-
+        List<Album> array = new ArrayList<Album>();
         URL url = null;
         try {
             url = new URL("https://api.backendless.com/v1/data/cds?props=album_name%2Cartist");
@@ -54,22 +53,13 @@ public class ApiRequest extends AsyncTask<String, Void, List<Album>> {
             }
             String finalJson = buffer.toString();
 
-            JSONObject parentObject = new JSONObject(finalJson);
-            JSONArray parentArray = parentObject.getJSONArray("data");
-            //albumList = new ArrayList<>();
-            for (int i=0; i < parentArray.length(); i++){
-                JSONObject finalObject = parentArray.getJSONObject(i);
-                Album album = new Album();
-                album.setName(finalObject.getString("album_name"));
-                album.setArtist(finalObject.getString("artist"));
-                albumList.add(album);
-            }
-            return albumList;
+            return AlbumHelper.getList(finalJson);
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw e;
+            //e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -77,14 +67,6 @@ public class ApiRequest extends AsyncTask<String, Void, List<Album>> {
 
         return null;
 
-    }
-
-    protected void onPostExecute(List<Album> result){
-        super.onPostExecute(result);
-        for (int i=0; i <result.size();i++ )
-            System.out.println("albums_name: "+ result.get(i).getName() + "artist: "+ result.get(i).getArtist());
-
-        //tu by som mohol pridat vytvorenie adaptera pre listView a nabindovat ho tam
     }
 
 }

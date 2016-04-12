@@ -1,5 +1,7 @@
 package sk.stuba.fiit.michal.nikolas.cd_shop.fragment;
 
+import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -13,12 +15,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
+import sk.stuba.fiit.michal.nikolas.data.api.ApiRequest;
+import sk.stuba.fiit.michal.nikolas.data.model.Album;
 
 
 /**
@@ -63,16 +82,22 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         title = getResources().getString(R.string.albums);
-        View view =  inflater.inflate(R.layout.fragment_albums, container, false);
+        final View view =  inflater.inflate(R.layout.fragment_albums, container, false);
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
         setHasOptionsMenu(true);
 
-        TestAdapter adapter = new TestAdapter(getActivity(),null);
+        //TestAdapter adapter = new TestAdapter(getActivity(),null);
         grid = (GridView) view.findViewById(R.id.gridview);
-        grid.setAdapter(adapter);
+        //grid.setAdapter(adapter);
         grid.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE_MODAL);
         grid.setMultiChoiceModeListener(this);
+        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(getActivity(), "Clicking", Toast.LENGTH_SHORT).show();
+            }
+        });
 
 
 
@@ -84,6 +109,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
                                     public void run() {
                                         swipeRefreshLayout.setRefreshing(true);
                                         background();
+                                        new AsyncGet().execute("");
                                     }
                                 }
         );
@@ -116,6 +142,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
         background();
+        new AsyncGet().execute("");
     }
 
     @Override
@@ -139,6 +166,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_delete) {
             Toast.makeText(getActivity(), "Deleting", Toast.LENGTH_SHORT).show();
+            mode.finish();
             return true;
         }
 
@@ -165,5 +193,39 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
         } else {
             Toast.makeText(getActivity(), "Nonchecked", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private class AsyncGet extends AsyncTask<String, Void, List<Album>> {
+
+        private Exception error;
+
+        public  AsyncGet() {
+        }
+
+        @Override
+        protected List<Album> doInBackground(String... params) {
+            try {
+                return ApiRequest.getList(params[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+                error = e;
+            }
+            return null;
+        }
+
+        protected void onPostExecute(List<Album> result){
+            super.onPostExecute(result);
+            if (error != null) {
+                System.out.println("Riesenie chyby");
+            }
+
+            for (int i=0; i <result.size();i++ )
+                System.out.println("albums_name: "+ result.get(i).getName() + "artist: "+ result.get(i).getArtist());
+            TestAdapter adapter = new TestAdapter(getContext(),result);
+            GridView grid = (GridView)getView().findViewById(R.id.gridview);
+            grid.setAdapter(adapter);
+            //tu by som mohol pridat vytvorenie adaptera pre listView a nabindovat ho tam
+        }
+
     }
 }

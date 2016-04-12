@@ -42,9 +42,9 @@ public class LoginActivity extends AppCompatActivity {
 
     public void logMe(View view) {
         // Login function with password check
-        List<Album> albumList = new ArrayList<Album>();
-        ApiRequest test = new ApiRequest(albumList);
-        test.execute("test");
+        //List<Album> albumList = new ArrayList<Album>();
+        //ApiRequest test = new ApiRequest();
+        //test.execute("test");
 
         EditText login = (EditText) activity.findViewById(R.id.editTextLogin);
         EditText pass = (EditText) activity.findViewById(R.id.editTextPass);
