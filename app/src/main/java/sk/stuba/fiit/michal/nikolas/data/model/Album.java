@@ -1,5 +1,7 @@
 package sk.stuba.fiit.michal.nikolas.data.model;
 
+import android.graphics.Bitmap;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -15,21 +17,49 @@ public class Album {
     long id;
     String name;
     String artist;
-    GenresEnum genre;
+    int genre;
     int decade;
     int country;
     String description;
     int price;
-    int rating;
+    int count;
     Date releaseDate;
     List<String> songs;
     Date createdAt;
     Date updatedAt;
     String recordHash;
+    Boolean sales;
+    String url;
+    Bitmap picture;
 
-    public void generateUUID(){
-        this.recordHash = UUID.randomUUID().toString();
+
+    public String getUrl() {
+        return url;
     }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Bitmap getPicture() {
+        return picture;
+    }
+
+    public void setPicture(Bitmap picture) {
+        this.picture = picture;
+    }
+
+    public Boolean getSales() {
+        return sales;
+    }
+
+    public void setSales(Boolean sales) {
+        this.sales = sales;
+    }
+
+    /*public void generateUUID(){
+        this.recordHash = UUID.randomUUID().toString();
+    }*/
 
     public String getRecordHash() {
         return recordHash;
@@ -63,11 +93,11 @@ public class Album {
         this.artist = artist;
     }
 
-    public GenresEnum getGenre() {
+    public int getGenre() {
         return genre;
     }
 
-    public void setGenre(GenresEnum genre) {
+    public void setGenre(int genre) {
         this.genre = genre;
     }
 
@@ -103,12 +133,12 @@ public class Album {
         this.price = price;
     }
 
-    public int getRating() {
-        return rating;
+    public int getCount() {
+        return count;
     }
 
-    public void setRating(int rating) {
-        this.rating = rating;
+    public void setCount(int rating) {
+        this.count = count;
     }
 
     public Date getReleaseDate() {

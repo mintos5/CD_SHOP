@@ -32,6 +32,7 @@ public abstract class AlbumHelper {
     public static final String KEY_SONGS = "alb_songs";
     public static final String KEY_GENRE = "alb_genre";
     public static final String KEY_RECORD_HASH = "alb_recordHash";
+    public static final String KEY_SALES = "alb_sales";
 
     public static final String CREATE_SQL = "CREATE TABLE " + TABLE_NAME + " ( "
             + KEY_ID + " INTEGER PRIMARY KEY, "
@@ -45,8 +46,8 @@ public abstract class AlbumHelper {
             + KEY_RELEASE_DATE + " DATETIME, "
             + KEY_SONGS + " TEXT, "
             + KEY_GENRE + " INTEGER, "
-            + KEY_RECORD_HASH + " TEXT "
-
+            + KEY_RECORD_HASH + " TEXT, "
+            + KEY_SALES + " BOOLEAN "
             + ");";
 
     public static Album saveAlbum(Provider provider, Album album) {
@@ -60,11 +61,12 @@ public abstract class AlbumHelper {
         values.put(KEY_DESCRIPTION, album.getDescription());
         values.put(KEY_NAME, album.getName());
         values.put(KEY_PRICE, album.getPrice());
-        values.put(KEY_RATING, album.getRating());
+        values.put(KEY_RATING, album.getCount());
         values.put(KEY_RELEASE_DATE, album.getReleaseDate().toString());
         values.put(KEY_SONGS, album.getSongs().toString());
-        values.put(KEY_GENRE, album.getGenre().getValue());
+        values.put(KEY_GENRE, album.getGenre());
         values.put(KEY_RECORD_HASH, album.getRecordHash());
+        values.put(KEY_SALES, album.getSales());
 
         long album_id;
 
@@ -103,11 +105,12 @@ public abstract class AlbumHelper {
             td.setDescription(c.getString(c.getColumnIndex(KEY_DESCRIPTION)));
             td.setName(c.getString(c.getColumnIndex(KEY_NAME)));
             td.setPrice(c.getInt(c.getColumnIndex(KEY_PRICE)));
-            td.setRating(c.getInt(c.getColumnIndex(KEY_RATING)));
+            td.setCount(c.getInt(c.getColumnIndex(KEY_RATING)));
             td.setReleaseDateFromString(c.getString(c.getColumnIndex(KEY_RELEASE_DATE)));
-            td.setGenre(GenresEnum.getByValue(c.getInt(c.getColumnIndex(KEY_GENRE))));
+            td.setGenre(c.getInt(c.getColumnIndex(KEY_GENRE)));
             td.parseSongsFromString(c.getString(c.getColumnIndex(KEY_SONGS)));
             td.setRecordHash(c.getString(c.getColumnIndex(KEY_RECORD_HASH)));
+            //td.setSales(c.getInt(c.getColumnIndex(KEY_SALES)));
         }
         catch (NullPointerException e) {
             return null;
