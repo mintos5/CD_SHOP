@@ -56,19 +56,17 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Country:"
                 android:id="@+id/textView2"
-                android:layout_alignBaseline="@+id/editTextRegion"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/editTextArtist" />
 
-            <EditText
+            <Spinner
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/editTextRegion"
-                android:text="Slovakia"
-                android:layout_below="@+id/editTextArtist"
-                android:layout_toRightOf="@+id/textView2"
-                android:layout_toEndOf="@+id/textView2"
-                android:editable="false" />
+                android:id="@+id/spinnerCountry"
+                android:layout_below="@+id/textView2"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -76,20 +74,18 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Genre:"
                 android:id="@+id/textView3"
-                android:layout_alignBaseline="@+id/editTextGenre"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/spinnerCountry" />
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinnerGenre"
+                android:layout_below="@+id/textView3"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
 
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/editTextGenre"
-                android:text="Pop"
-                android:layout_below="@+id/editTextRegion"
-                android:layout_toRightOf="@+id/textView3"
-                android:layout_toEndOf="@+id/textView3"
-                android:editable="false"
-                android:enabled="true" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -97,40 +93,17 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:text="Decade:"
                 android:id="@+id/textView4"
-                android:layout_alignBaseline="@+id/editTextDecade"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/spinnerGenre" />
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/spinnerDecade"
+                android:layout_below="@+id/textView4"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/editTextDecade"
-                android:text="1990"
-                android:layout_below="@+id/editTextGenre"
-                android:layout_toRightOf="@+id/textView4"
-                android:layout_toEndOf="@+id/textView4"
-                android:editable="false" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="Released:"
-                android:id="@+id/textView5"
-                android:layout_alignBaseline="@+id/editTextRLS"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
-
-            <EditText
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/editTextRLS"
-                android:text="16.5.1990"
-                android:layout_below="@+id/editTextDecade"
-                android:layout_toRightOf="@+id/textView5"
-                android:layout_toEndOf="@+id/textView5"
-                android:editable="false"
-                android:inputType="datetime" />
 
 
         </RelativeLayout>
@@ -159,7 +132,8 @@
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/textView6"
             android:layout_toEndOf="@+id/textView6"
-            android:text="45€" />
+            android:text="45€"
+            android:inputType="number" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -179,7 +153,8 @@
             android:text="35"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/textView7"
-            android:layout_toEndOf="@+id/textView7" />
+            android:layout_toEndOf="@+id/textView7"
+            android:inputType="number" />
 
         <CheckBox
             android:layout_width="wrap_content"
