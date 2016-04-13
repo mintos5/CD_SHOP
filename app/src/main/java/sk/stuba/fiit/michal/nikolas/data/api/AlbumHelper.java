@@ -55,9 +55,9 @@ public class AlbumHelper {
         return album;
     }
 
-    private static Bitmap image(String link) {
+    private static Bitmap image(String url) {
         try {
-            Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(link).getContent());
+            Bitmap bitmap = BitmapFactory.decodeStream((InputStream) new URL(url).getContent());
             return bitmap;
         } catch (MalformedURLException e) {
             e.printStackTrace();

@@ -14,6 +14,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -128,7 +130,52 @@ public class ApiRequest {
         }
         return null;
 
-
     }
+    public static void updateAlbum(Album album) throws IOException {
+        HttpURLConnection connection = null;
+        URL url = null;
+        BufferedReader reader = null;
+        String message;
+        JSONObject json = new JSONObject();
+        try {
+            json.put("album_name",album.getName());
+            json.put("artist",album.getArtist());
+            json.put("count", album.getCount());
+            json.put("country", album.getCountry());
+            json.put("decade", album.getDecade());
+            json.put("description", album.getDescription());
+            json.put("genre",album.getGenre());
+            json.put("price",album.getPrice());
+            json.put("sales",album.getSales());
+            json.put("album_url",album.getUrl());
+            json.put("songs",album.getSongs());
+            message = json.toString();
+            url = new URL (String.format("https://api.backendless.com/v1/data/cds/%s",album.getRecordHash()));
+            connection = (HttpURLConnection) url.openConnection();
+            connection.addRequestProperty("application-id",
+                    "F9615D38-AE50-A389-FF5E-8BD658331900");
+            connection.addRequestProperty("secret-key",
+                    "A4082182-4C7A-E9E8-FFF4-2D69B1025700");
+            connection.setDoOutput(true);
+            connection.setRequestMethod("PUT");
+            connection.addRequestProperty("Content-Type", "application/json");
+            OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
+            System.out.println("meesssaaaagggeee " + message);
+            out.write(message);
+            out.close();
+            connection.connect();
+            InputStream stream = connection.getInputStream();
+            reader = new BufferedReader(new InputStreamReader(stream));
+            StringBuffer buffer = new StringBuffer();
+            String line = "";
+            while((line = reader.readLine()) != null){
+                buffer.append(line);
+            }
+            String finalJson = buffer.toString();
+           // System.out.println("fiiiinnnnaaaaalllll " + finalJson);
 
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 }
