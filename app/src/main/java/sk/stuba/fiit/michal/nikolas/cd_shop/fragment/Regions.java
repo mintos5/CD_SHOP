@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.model.GenresEnum;
+import sk.stuba.fiit.michal.nikolas.cd_shop.model.RegionEnum;
 
 
 /**
@@ -39,7 +40,7 @@ public class Regions extends ListFragment implements AdapterView.OnItemClickList
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ArrayAdapter adapter;
-        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, GenresEnum.getAllNames());
+        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, RegionEnum.getAllNames());
         setListAdapter(adapter);
         getListView().setOnItemClickListener(this);
         //getListView().addHeaderView(header);

@@ -23,6 +23,7 @@ import java.util.List;
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
 import sk.stuba.fiit.michal.nikolas.data.model.Album;
+import sk.stuba.fiit.michal.nikolas.data.sqlite.*;
 
 /**
  * Created by Nikolas on 1.4.2016.
@@ -31,7 +32,6 @@ public class ApiRequest {
 
 
     public static List<Album> getList(String... params) throws IOException {
-        Log.i("as","asdas2");
         HttpURLConnection connection = null;
         BufferedReader reader = null;
         List<Album> array = new ArrayList<Album>();

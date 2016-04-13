@@ -7,19 +7,19 @@ public enum GenresEnum {
     rock(0,"Rock"),
     pop(1,"PoP"),
     jazz(2,"Jazz"),
-    funky(3,"Funky"),
-    rock2(0,"Rock"),
-    pop2(1,"PoP"),
-    jazz2(2,"Jazz"),
-    funky2(3,"Funky"),
-    rock3(0,"Rock"),
-    pop3(1,"PoP"),
-    jazz3(2,"Jazz"),
-    funky3(3,"Funky"),
-    rock4(0,"Rock"),
-    pop4(1,"PoP"),
-    jazz4(2,"Jazz"),
-    funky4(3,"Funky");
+    funk(3,"Funk"),
+    indie(4,"Indie"),
+    hiphop(5,"Hip Hop"),
+    rnb(6,"RnB"),
+    country(7,"Country"),
+    folk(8,"Folk"),
+    metal(9,"Metal"),
+    soul(10,"Soul"),
+    blues(11,"Blues"),
+    reggae(12,"Reggae"),
+    latino(13,"Latino"),
+    punk(14,"Punk"),
+    classical(15,"Classical");
 
     private final int value;
     private final String stringName;

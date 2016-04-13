@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
+import sk.stuba.fiit.michal.nikolas.cd_shop.model.DecadeEnum;
 import sk.stuba.fiit.michal.nikolas.cd_shop.model.GenresEnum;
 
 
@@ -49,7 +50,7 @@ public class Decades extends ListFragment implements AdapterView.OnItemClickList
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         ArrayAdapter adapter;
-        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, GenresEnum.getAllNames());
+        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, DecadeEnum.getAllNames());
         setListAdapter(adapter);
         getListView().setOnItemClickListener(this);
         //getListView().addHeaderView(header);
