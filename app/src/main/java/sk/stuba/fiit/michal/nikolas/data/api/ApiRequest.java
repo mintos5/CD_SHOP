@@ -20,8 +20,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
@@ -162,6 +165,8 @@ public class ApiRequest {
             json.put("sales",album.getSales());
             json.put("album_url",album.getUrl());
             json.put("songs",album.getSongs());
+            DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss", Locale.US);
+            json.put("release_date", dateFormat.format(album.getReleaseDate()));
             message = json.toString();
             url = new URL (String.format("https://api.backendless.com/v1/data/cds/%s",album.getRecordHash()));
             connection = (HttpURLConnection) url.openConnection();
@@ -173,7 +178,6 @@ public class ApiRequest {
             connection.setRequestMethod("PUT");
             connection.addRequestProperty("Content-Type", "application/json");
             OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
-           // System.out.println("meesssaaaagggeee " + message);
             out.write(message);
             out.close();
             connection.connect();

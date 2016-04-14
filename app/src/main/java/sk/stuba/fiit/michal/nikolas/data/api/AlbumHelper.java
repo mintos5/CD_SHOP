@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class AlbumHelper {
         album.setUrl(parentObject.getString("album_url"));
         album.setPicture(image(album.getUrl()));
         album.parseSongsFromString(parentObject.getString("songs"));
+        album.setReleaseDateFromString(parentObject.getString("release_date"), "dd/MM/yyyy hh:mm:ss");
         return album;
     }
 

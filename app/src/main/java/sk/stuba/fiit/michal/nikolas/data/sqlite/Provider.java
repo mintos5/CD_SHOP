@@ -16,13 +16,13 @@ public class Provider extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "albumManager";
 
-    public Provider(Context context, DatabaseErrorHandler errorHandler) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION, errorHandler);
+    public Provider(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(ActivityLogHelper.CREATE_SQL);
+//        db.execSQL(ActivityLogHelper.CREATE_SQL);
         db.execSQL(AlbumHelper.CREATE_SQL);
     }
 

@@ -2,12 +2,13 @@ package sk.stuba.fiit.michal.nikolas.data.model;
 
 import android.graphics.Bitmap;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-
-import sk.stuba.fiit.michal.nikolas.cd_shop.model.GenresEnum;
+import java.util.Locale;
 
 /**
  * Created by Nikolas on 31.3.2016.
@@ -28,7 +29,7 @@ public class Album {
     Date createdAt;
     Date updatedAt;
     String recordHash;
-    Boolean sales;
+    boolean sales;
     String url;
     Bitmap picture;
 
@@ -49,11 +50,11 @@ public class Album {
         this.picture = picture;
     }
 
-    public Boolean getSales() {
+    public boolean getSales() {
         return sales;
     }
 
-    public void setSales(Boolean sales) {
+    public void setSales(boolean sales) {
         this.sales = sales;
     }
 
@@ -174,13 +175,16 @@ public class Album {
         return songs;
     }
 
-    public boolean setReleaseDateFromString(String datetime) {
-        //TODO: MAGIC
-//        String dateInString = new java.text.SimpleDateFormat("EEEE, dd/MM/yyyy/hh:mm:ss")
-//                .format(cal.getTime())
-//        SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd/MM/yyyy/hh:mm:ss");
-//        Date parsedDate = formatter.parse(dateInString);
-        return  true;
+    public boolean setReleaseDateFromString(String datetime, String format) {
 
+        DateFormat dateFormat = new SimpleDateFormat(format, Locale.US);
+
+        try {
+            this.setReleaseDate(dateFormat.parse(datetime));
+        } catch (ParseException e) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -5,9 +5,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import sk.stuba.fiit.michal.nikolas.cd_shop.model.GenresEnum;
@@ -62,30 +65,30 @@ public abstract class AlbumHelper {
         values.put(KEY_NAME, album.getName());
         values.put(KEY_PRICE, album.getPrice());
         values.put(KEY_RATING, album.getCount());
-        values.put(KEY_RELEASE_DATE, album.getReleaseDate().toString());
-        values.put(KEY_SONGS, album.getSongs().toString());
+
+        if (album.getReleaseDate() != null) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+            values.put(KEY_RELEASE_DATE, dateFormat.format(album.getReleaseDate()));
+        }
+
+        if (album.getSongs() != null)
+            values.put(KEY_SONGS, album.getSongs().toString());
         values.put(KEY_GENRE, album.getGenre());
         values.put(KEY_RECORD_HASH, album.getRecordHash());
         values.put(KEY_SALES, album.getSales());
 
-        long album_id;
+        db.update(TABLE_NAME, values, "alb_recordHash LIKE ?", new String[]{album.getRecordHash()});
 
-        if (album.getId() > 0){
-            album_id = db.update(TABLE_NAME, values, "id LIKE ?", new String[]{String.valueOf(album.getId())});
-        }
-        else {
-            album_id = db.insert(TABLE_NAME, null, values);
-        }
         db.close();
 
-        return getAlbum(provider, album_id);
+        return getAlbum(provider, album.getRecordHash());
     }
 
-    public static Album getAlbum(Provider provider, long album_id){
+    public static Album getAlbum(Provider provider, long id){
 
         SQLiteDatabase db = provider.getReadableDatabase();
 
-        String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE " + KEY_ID + " = " + album_id;
+        String selectQuery = String.format("SELECT %s.*, DATE(%s) FROM %s WHERE %s = %d", TABLE_NAME, KEY_RELEASE_DATE, TABLE_NAME, KEY_ID, id);
 
         Log.e(Provider.LOG_NAME, selectQuery);
 
@@ -106,17 +109,55 @@ public abstract class AlbumHelper {
             td.setName(c.getString(c.getColumnIndex(KEY_NAME)));
             td.setPrice(c.getInt(c.getColumnIndex(KEY_PRICE)));
             td.setCount(c.getInt(c.getColumnIndex(KEY_RATING)));
-            td.setReleaseDateFromString(c.getString(c.getColumnIndex(KEY_RELEASE_DATE)));
+            td.setReleaseDateFromString(c.getString(c.getColumnIndex(KEY_RELEASE_DATE)), "yyyy-MM-dd");
             td.setGenre(c.getInt(c.getColumnIndex(KEY_GENRE)));
             td.parseSongsFromString(c.getString(c.getColumnIndex(KEY_SONGS)));
             td.setRecordHash(c.getString(c.getColumnIndex(KEY_RECORD_HASH)));
-            //td.setSales(c.getInt(c.getColumnIndex(KEY_SALES)));
+            td.setSales(c.getInt(c.getColumnIndex(KEY_SALES)) != 0);
         }
         catch (NullPointerException e) {
             return null;
         }
         db.close();
-        return  td;
+        return td;
+    }
+
+    public static Album getAlbum(Provider provider, String hash){
+
+        SQLiteDatabase db = provider.getReadableDatabase();
+
+        String selectQuery = String.format("SELECT %s.*, DATE(%s) FROM %s WHERE %s = '%s'", TABLE_NAME, KEY_RELEASE_DATE, TABLE_NAME, KEY_RECORD_HASH, hash);
+
+        Log.e(Provider.LOG_NAME, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+
+        if (c != null)
+            c.moveToFirst();
+
+        Album td = new Album();
+
+        try {
+            td.setId(c.getLong(c.getColumnIndex(KEY_ID)));
+            td.setArtist(c.getString(c.getColumnIndex(KEY_ARTIST)));
+            td.setCountry(c.getInt(c.getColumnIndex(KEY_COUNTRY)));
+            td.setDecade(c.getInt(c.getColumnIndex(KEY_DECADE)));
+            td.setDescription(c.getString(c.getColumnIndex(KEY_DESCRIPTION)));
+            td.setName(c.getString(c.getColumnIndex(KEY_NAME)));
+            td.setPrice(c.getInt(c.getColumnIndex(KEY_PRICE)));
+            td.setCount(c.getInt(c.getColumnIndex(KEY_RATING)));
+            td.setReleaseDateFromString(c.getString(c.getColumnIndex(KEY_RELEASE_DATE)), "yyyy-MM-dd");
+            td.setGenre(c.getInt(c.getColumnIndex(KEY_GENRE)));
+            td.parseSongsFromString(c.getString(c.getColumnIndex(KEY_SONGS)));
+            td.setRecordHash(c.getString(c.getColumnIndex(KEY_RECORD_HASH)));
+            td.setSales(c.getInt(c.getColumnIndex(KEY_SALES)) != 0);
+        }
+        catch (NullPointerException e) {
+            return null;
+        }
+        db.close();
+        return td;
     }
 
     public static List<Album> getAll (Provider provider, Map<String, Integer> filter){
