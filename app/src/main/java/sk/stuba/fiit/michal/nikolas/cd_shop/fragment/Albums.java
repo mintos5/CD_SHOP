@@ -36,6 +36,7 @@ import java.util.List;
 
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
+import sk.stuba.fiit.michal.nikolas.cd_shop.exception.ApiException;
 import sk.stuba.fiit.michal.nikolas.data.api.ApiRequest;
 import sk.stuba.fiit.michal.nikolas.data.model.Album;
 
@@ -56,24 +57,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
     private GridView grid;
 
     public void background() {
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                Log.i("test","Prvy");
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Log.i("test","Druhy");
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                });
-            }
-        });
-        thread.start();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
 
@@ -140,7 +124,6 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
 
     @Override
     public void onRefresh() {
-        swipeRefreshLayout.setRefreshing(true);
         background();
         new AsyncGet().execute("");
     }
@@ -209,6 +192,8 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
             } catch (IOException e) {
                 e.printStackTrace();
                 error = e;
+            } catch (ApiException e) {
+                e.printStackTrace();
             }
             return null;
         }
