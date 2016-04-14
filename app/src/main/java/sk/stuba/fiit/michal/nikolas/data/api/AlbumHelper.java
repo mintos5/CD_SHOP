@@ -54,7 +54,7 @@ public class AlbumHelper {
         album.setUrl(parentObject.getString("album_url"));
         album.setPicture(image(album.getUrl()));
         album.parseSongsFromString(parentObject.getString("songs"));
-        album.setReleaseDateFromString(parentObject.getString("release_date"), "dd/MM/yyyy hh:mm:ss");
+        album.setReleaseDateFromString(parentObject.getString("release_date"));
         return album;
     }
 

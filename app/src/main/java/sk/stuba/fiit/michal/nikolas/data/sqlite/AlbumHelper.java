@@ -109,7 +109,8 @@ public abstract class AlbumHelper {
             td.setName(c.getString(c.getColumnIndex(KEY_NAME)));
             td.setPrice(c.getInt(c.getColumnIndex(KEY_PRICE)));
             td.setCount(c.getInt(c.getColumnIndex(KEY_RATING)));
-            td.setReleaseDateFromString(c.getString(c.getColumnIndex(KEY_RELEASE_DATE)), "yyyy-MM-dd");
+            //TODO
+            //td.setReleaseDateFromString(c.getString(c.getColumnIndex(KEY_RELEASE_DATE)), "yyyy-MM-dd");
             td.setGenre(c.getInt(c.getColumnIndex(KEY_GENRE)));
             td.parseSongsFromString(c.getString(c.getColumnIndex(KEY_SONGS)));
             td.setRecordHash(c.getString(c.getColumnIndex(KEY_RECORD_HASH)));
@@ -147,7 +148,8 @@ public abstract class AlbumHelper {
             td.setName(c.getString(c.getColumnIndex(KEY_NAME)));
             td.setPrice(c.getInt(c.getColumnIndex(KEY_PRICE)));
             td.setCount(c.getInt(c.getColumnIndex(KEY_RATING)));
-            td.setReleaseDateFromString(c.getString(c.getColumnIndex(KEY_RELEASE_DATE)), "yyyy-MM-dd");
+            //TODO
+            //td.setReleaseDateFromString(c.getString(c.getColumnIndex(KEY_RELEASE_DATE)), "yyyy-MM-dd");
             td.setGenre(c.getInt(c.getColumnIndex(KEY_GENRE)));
             td.parseSongsFromString(c.getString(c.getColumnIndex(KEY_SONGS)));
             td.setRecordHash(c.getString(c.getColumnIndex(KEY_RECORD_HASH)));

@@ -2,6 +2,7 @@ package sk.stuba.fiit.michal.nikolas.data.model;
 
 import android.graphics.Bitmap;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -175,15 +176,10 @@ public class Album {
         return songs;
     }
 
-    public boolean setReleaseDateFromString(String datetime, String format) {
+    public boolean setReleaseDateFromString(String datetime) {
 
-        DateFormat dateFormat = new SimpleDateFormat(format, Locale.US);
-
-        try {
-            this.setReleaseDate(dateFormat.parse(datetime));
-        } catch (ParseException e) {
-            return false;
-        }
+        Timestamp unixTime = new Timestamp(Long.valueOf(datetime));
+        this.setReleaseDate(new Date(unixTime.getTime()));
 
         return true;
     }

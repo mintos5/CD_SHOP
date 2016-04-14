@@ -61,7 +61,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
     private Spinner spinnerRegion;
     private Spinner spinnerDecade;
     private Spinner spinnerGenre;
-    private EditText editTextPrice,editTextArtist,editTextStock;
+    private EditText editTextPrice,editTextArtist,editTextStock,editTextReleased;
     private CheckBox checkBox;
     private ImageView imageView;
 
@@ -200,6 +200,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         editTextPrice = (EditText)header.findViewById(R.id.editTextPrice);
         imageView = (ImageView)header.findViewById(R.id.imageViewCover);
         checkBox = (CheckBox)header.findViewById(R.id.checkBox);
+        editTextReleased = (EditText)header.findViewById(R.id.editTextReleased);
     }
 
     private void fillText() {
@@ -230,6 +231,8 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         editTextPrice.setText(String.valueOf(albumDetail.getPrice() / 100.00));
         editTextStock.setText(String.valueOf(albumDetail.getCount()));
         checkBox.setEnabled(albumDetail.getSales());
+        editTextReleased.setText(albumDetail.getReleaseDate().toString());
+
         ArrayAdapter adapter;
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_activated_1, albumDetail.getSongs());
         setListAdapter(adapter);
