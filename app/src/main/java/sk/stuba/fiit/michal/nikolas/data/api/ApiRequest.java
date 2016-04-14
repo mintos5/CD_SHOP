@@ -72,13 +72,13 @@ public class ApiRequest {
     }
 
 
-    public static void deletAlbum(Album album) throws ApiException {
+    public static void deletAlbum(String hash) throws ApiException {
         HttpURLConnection connection = null;
         URL url = null;
         BufferedReader reader = null;
         try {
-            url = new URL (String.format("https://api.backendless.com/v1/data/cds/%s",album.getRecordHash()));
-            System.out.println(String.format("https://api.backendless.com/v1/data/cds/%s",album.getRecordHash()));
+            url = new URL (String.format("https://api.backendless.com/v1/data/cds/%s",hash));
+            //System.out.println(String.format("https://api.backendless.com/v1/data/cds/%s",hash));
             connection = (HttpURLConnection) url.openConnection();
             connection.addRequestProperty("application-id",
                     "F9615D38-AE50-A389-FF5E-8BD658331900");
@@ -105,12 +105,12 @@ public class ApiRequest {
         }
     }
 
-    public static Album getDetailAlbum(Album album) throws IOException, ApiException {
+    public static Album getDetailAlbum(String hash) throws IOException, ApiException {
         HttpURLConnection connection = null;
         BufferedReader reader = null;
         URL url = null;
         try {
-            url = new URL(String.format("https://api.backendless.com/v1/data/cds/%s",album.getRecordHash()));
+            url = new URL(String.format("https://api.backendless.com/v1/data/cds/%s",hash));
             connection = (HttpURLConnection) url.openConnection();
             connection.addRequestProperty("application-id",
                     "F9615D38-AE50-A389-FF5E-8BD658331900");
