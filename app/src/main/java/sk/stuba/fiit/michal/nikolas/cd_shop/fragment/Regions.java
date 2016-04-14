@@ -3,6 +3,7 @@ package sk.stuba.fiit.michal.nikolas.cd_shop.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -48,6 +49,14 @@ public class Regions extends ListFragment implements AdapterView.OnItemClickList
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        Fragment nextFra = new Albums();
+        Bundle transData = new Bundle();
+        transData.putString("enumType", "country");
+        transData.putInt("enumNum", position);
+        nextFra.setArguments(transData);
+        fragmentTransaction.replace(R.id.frame,nextFra)
+                .addToBackStack("tag");
+        fragmentTransaction.commit();
     }
 }

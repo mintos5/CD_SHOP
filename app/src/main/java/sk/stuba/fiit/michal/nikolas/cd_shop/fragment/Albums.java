@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -48,17 +49,20 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ArrayAdapter adapter;
+    private List<Album> albumList;
+    private List<Album> albumListRemove;
+
     private String title;
+    private String enumType;
+    private int enumNum;
 
     public Albums() {
         // Required empty public constructor
+        albumListRemove = new ArrayList<Album>();
     }
 
     private GridView grid;
 
-    public void background() {
-        swipeRefreshLayout.setRefreshing(false);
-    }
 
 
     @Override
@@ -79,11 +83,22 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
         grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "Clicking", Toast.LENGTH_SHORT).show();
+                Bundle transData = new Bundle();
+                transData.putString("id", albumList.get(position).getRecordHash());
+                AlbumView frag = new AlbumView();
+                frag.setArguments(transData);
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.frame, frag)
+                        .addToBackStack("tag");
+                fragmentTransaction.commit();
             }
         });
 
-
+        Bundle args = getArguments();
+        if (args!= null) {
+            enumType = args.getString("enumType");
+            enumNum = args.getInt("enumNum");
+        }
 
 
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
@@ -91,9 +106,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
         swipeRefreshLayout.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        swipeRefreshLayout.setRefreshing(true);
-                                        background();
-                                        new AsyncGet().execute("");
+                                        onRefresh();
                                     }
                                 }
         );
@@ -124,8 +137,13 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
 
     @Override
     public void onRefresh() {
-        background();
-        new AsyncGet().execute("");
+        swipeRefreshLayout.setRefreshing(true);
+        if (enumType== null) {
+            new AsyncGet().execute("");
+        }
+        else {
+            new AsyncGet().execute(enumType, new Integer(enumNum).toString());
+        }
     }
 
     @Override
@@ -149,7 +167,16 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_delete) {
             Toast.makeText(getActivity(), "Deleting", Toast.LENGTH_SHORT).show();
+            String[] hashArray = new String[albumListRemove.size()];
+            int i =0;
+            for (Album alb1 : albumListRemove) {
+                hashArray[i]=alb1.getRecordHash();
+                i++;
+            }
+            new AsyncDelete().execute(hashArray);
             mode.finish();
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.detach(this).attach(this).commit();
             return true;
         }
 
@@ -172,15 +199,15 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
                 break;
         }
         if (checked) {
-            Toast.makeText(getActivity(), "Checked", Toast.LENGTH_SHORT).show();
+            albumListRemove.add(albumList.get(position));
         } else {
-            Toast.makeText(getActivity(), "Nonchecked", Toast.LENGTH_SHORT).show();
+            albumListRemove.remove(albumList.get(position));
         }
     }
 
     private class AsyncGet extends AsyncTask<String, Void, List<Album>> {
 
-        private Exception error;
+        private ApiException error;
 
         public  AsyncGet() {
         }
@@ -188,12 +215,23 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
         @Override
         protected List<Album> doInBackground(String... params) {
             try {
-                return ApiRequest.getList(params[0]);
+                if (params[0].equals("")) {
+                    return ApiRequest.getList(params[0]);
+                }
+                if (params[0].equals("country")) {
+                    return ApiRequest.getSortList(params[0]+"="+params[1]);
+                }
+                if (params[0].equals("decade")) {
+                    return ApiRequest.getSortList(params[0]+"="+params[1]);
+                }
+                if (params[0].equals("genre")) {
+                    return ApiRequest.getSortList(params[0]+"="+params[1]);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
-                error = e;
             } catch (ApiException e) {
                 e.printStackTrace();
+                error = e;
             }
             return null;
         }
@@ -203,13 +241,38 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
             if (error != null) {
                 System.out.println("Riesenie chyby");
             }
-
-            for (int i=0; i <result.size();i++ )
-                System.out.println("albums_name: "+ result.get(i).getName() + "artist: "+ result.get(i).getArtist());
+            albumList = result;
             TestAdapter adapter = new TestAdapter(getContext(),result);
             GridView grid = (GridView)getView().findViewById(R.id.gridview);
             grid.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
+            swipeRefreshLayout.setRefreshing(false);
             //tu by som mohol pridat vytvorenie adaptera pre listView a nabindovat ho tam
+        }
+
+    }
+
+    private class AsyncDelete extends AsyncTask<String, Void, Void> {
+
+        private ApiException error;
+        public  AsyncDelete() {}
+
+        @Override
+        protected Void doInBackground(String... params) {
+            try {
+                for (String param1 : params) {
+                    ApiRequest.deletAlbum(param1);
+                }
+            } catch (ApiException e) {
+                e.printStackTrace();
+                error = e;
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void result){
+            super.onPostExecute(result);
+
         }
 
     }

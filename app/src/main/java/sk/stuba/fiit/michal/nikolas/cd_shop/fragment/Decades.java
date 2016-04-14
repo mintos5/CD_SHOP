@@ -59,10 +59,13 @@ public class Decades extends ListFragment implements AdapterView.OnItemClickList
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.frame,new AlbumView())
+        Fragment nextFra = new Albums();
+        Bundle transData = new Bundle();
+        transData.putString("enumType", "decade");
+        transData.putInt("enumNum",position);
+        nextFra.setArguments(transData);
+        fragmentTransaction.replace(R.id.frame,nextFra)
                 .addToBackStack("tag");
         fragmentTransaction.commit();
-        Toast.makeText(getActivity(), "Item: " + position + " " + id, Toast.LENGTH_SHORT).show();
-
     }
 }

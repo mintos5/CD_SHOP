@@ -87,8 +87,12 @@ public class ApiRequest {
             connection.setRequestMethod("DELETE");
             connection.connect();
 
-            if (connection.getResponseCode() != 200)
-               throw new ApiException( connection.getResponseCode());
+            if (connection.getResponseCode() != 200) {
+                System.out.println(connection.getResponseMessage());
+                throw new ApiException( connection.getResponseCode());
+
+            }
+
             InputStream stream = connection.getInputStream();
             reader = new BufferedReader(new InputStreamReader(stream));
             StringBuffer buffer = new StringBuffer();

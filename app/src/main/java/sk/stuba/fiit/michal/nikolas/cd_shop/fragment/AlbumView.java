@@ -2,9 +2,8 @@ package sk.stuba.fiit.michal.nikolas.cd_shop.fragment;
 
 
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -22,22 +21,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.SimpleTimeZone;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
-import sk.stuba.fiit.michal.nikolas.cd_shop.activity.FullscreenAlbum;
 import sk.stuba.fiit.michal.nikolas.cd_shop.activity.MainActivity;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.SpinnerItemAdapter;
+import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
+import sk.stuba.fiit.michal.nikolas.cd_shop.exception.ApiException;
 import sk.stuba.fiit.michal.nikolas.cd_shop.model.DecadeEnum;
 import sk.stuba.fiit.michal.nikolas.cd_shop.model.GenresEnum;
 import sk.stuba.fiit.michal.nikolas.cd_shop.model.RegionEnum;
+import sk.stuba.fiit.michal.nikolas.data.api.ApiRequest;
+import sk.stuba.fiit.michal.nikolas.data.model.Album;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,11 +54,19 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
     private View header;
     private String title;
     private SwipeRefreshLayout swipeRefreshLayout;
+
+    private Album albumDetail;
+    private String albumId;
+
     private Spinner spinnerRegion;
     private Spinner spinnerDecade;
     private Spinner spinnerGenre;
-    private EditText editText;
-    private DatePickerDialog test;
+    private EditText editTextPrice,editTextArtist,editTextStock;
+    private CheckBox checkBox;
+    private ImageView imageView;
+
+    private DatePickerDialog dateDialog;
+    private int year,month,day;
     private Menu menu;
 
 
@@ -69,17 +83,15 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
         header = inflater.inflate(R.layout.fragment_album_header, null, false);
         setHasOptionsMenu(true);
+        Bundle args = getArguments();
+        albumId = args.getString("id");
         // Inflate the layout for this fragment
-        System.out.println("Test1");
         return inflater.inflate(R.layout.fragment_album_list, container, false);
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ArrayAdapter adapter;
-        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_activated_1, GenresEnum.getAllNames());
         getListView().addHeaderView(header);
-        setListAdapter(adapter);
         //getListView().setOnItemClickListener(this);
         getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         getListView().setMultiChoiceModeListener(this);
@@ -95,12 +107,13 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
                                 }
         );
         System.out.println("Test2");
-        fillText();
+        //fillText();
     }
 
     @Override
     public void onRefresh() {
-        swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setRefreshing(true);
+        new AsyncGetDetail().execute(albumId);
     }
 
 
@@ -123,9 +136,9 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
             Toast.makeText(getActivity(), "Editing", Toast.LENGTH_SHORT).show();
             spinnerRegion.setEnabled(true);
             spinnerRegion.setClickable(true);
-            editText.setInputType(InputType.TYPE_CLASS_NUMBER);
-            test.updateDate(2000, 1, 1);
-            //test.show();
+            editTextPrice.setInputType(InputType.TYPE_CLASS_NUMBER);
+            dateDialog.updateDate(2000, 1, 1);
+            //dateDialog.show();
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle("Add song");
@@ -133,9 +146,11 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
             // but you can provide here any other instance of ViewGroup from your Fragment / Activity
             View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.song_dialog, (ViewGroup) getView(), false);
             // Set up the input
-            final EditText input = (EditText) viewInflated.findViewById(R.id.editTextNumber);
+            EditText input = (EditText) viewInflated.findViewById(R.id.editTextNumber);
+            EditText num = (EditText) viewInflated.findViewById(R.id.editTextSong);
+            int cena = Integer.parseInt(num.getText().toString());
             // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-            builder.setView(viewInflated);
+
 
             // Set up the buttons
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -170,34 +185,54 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
     }
 
     private void setViews() {
-        int y = 0,m = 0,d = 0;
-        spinnerRegion = (Spinner)header.findViewById(R.id.spinnerRegion);
-        spinnerDecade = (Spinner)header.findViewById(R.id.spinnerDecade);
-        spinnerGenre = (Spinner)header.findViewById(R.id.spinnerGenre);
-        editText = (EditText)header.findViewById(R.id.editTextPrice);
-
-        test = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+        dateDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
 
             }
-        },y,m,d);
+        },year,month,day);
+
+        spinnerRegion = (Spinner)header.findViewById(R.id.spinnerRegion);
+        spinnerDecade = (Spinner)header.findViewById(R.id.spinnerDecade);
+        spinnerGenre = (Spinner)header.findViewById(R.id.spinnerGenre);
+        editTextArtist = (EditText)header.findViewById(R.id.editTextArtist);
+        editTextStock = (EditText)header.findViewById(R.id.editTextStock);
+        editTextPrice = (EditText)header.findViewById(R.id.editTextPrice);
+        imageView = (ImageView)header.findViewById(R.id.imageViewCover);
+        checkBox = (CheckBox)header.findViewById(R.id.checkBox);
     }
 
     private void fillText() {
         setViews();
 
+        MainActivity activity = (MainActivity)getActivity();
+        activity.getSupportActionBar().setTitle(albumDetail.getName());
+        activity.setCover(albumDetail.getPicture());
+        imageView.setImageBitmap(albumDetail.getPicture());
+
+
         spinnerRegion.setEnabled(false);
         spinnerRegion.setClickable(false);
-        spinnerRegion.setAdapter(new SpinnerItemAdapter(getActivity(),RegionEnum.getAllNames()));
+        spinnerRegion.setAdapter(new SpinnerItemAdapter(getActivity(), RegionEnum.getAllNames()));
+        spinnerRegion.setSelection(albumDetail.getCountry());
 
         spinnerDecade.setEnabled(false);
         spinnerDecade.setClickable(false);
-        spinnerDecade.setAdapter(new SpinnerItemAdapter(getActivity(),DecadeEnum.getAllNames()));
+        spinnerDecade.setAdapter(new SpinnerItemAdapter(getActivity(), DecadeEnum.getAllNames()));
+        spinnerDecade.setSelection(albumDetail.getDecade());
 
         spinnerGenre.setEnabled(false);
         spinnerGenre.setClickable(false);
         spinnerGenre.setAdapter(new SpinnerItemAdapter(getActivity(), GenresEnum.getAllNames()));
+        spinnerGenre.setSelection(albumDetail.getGenre());
+
+        editTextArtist.setText(albumDetail.getArtist());
+        editTextPrice.setText(String.valueOf(albumDetail.getPrice() / 100.00));
+        editTextStock.setText(String.valueOf(albumDetail.getCount()));
+        checkBox.setEnabled(albumDetail.getSales());
+        ArrayAdapter adapter;
+        adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_activated_1, albumDetail.getSongs());
+        setListAdapter(adapter);
 
     }
 
@@ -247,4 +282,43 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
     public void onDestroyActionMode(ActionMode mode) {
 
     }
+
+    private class AsyncGetDetail extends AsyncTask<String, Void, Album> {
+
+        private ApiException error;
+
+        public  AsyncGetDetail() {
+        }
+
+        @Override
+        protected Album doInBackground(String... params) {
+            try {
+                return ApiRequest.getDetailAlbum(params[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ApiException e) {
+                e.printStackTrace();
+                error = e;
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Album result){
+            super.onPostExecute(result);
+            try {
+                albumDetail = get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            if (error != null) {
+                System.out.println("Riesenie chyby");
+            }
+            fillText();
+            swipeRefreshLayout.setRefreshing(false);
+        }
+
+    }
+
 }

@@ -1,6 +1,7 @@
 package sk.stuba.fiit.michal.nikolas.cd_shop.activity;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -26,6 +27,15 @@ public class MainActivity extends AppCompatActivity
 
     private Fragment oldfragment;
     public boolean offline;
+    private Bitmap cover;
+
+    public Bitmap getCover() {
+        return cover;
+    }
+
+    public void setCover(Bitmap cover) {
+        this.cover = cover;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +103,7 @@ public class MainActivity extends AppCompatActivity
 
     public void showMe(View view) {
         Intent intent = new Intent(this, FullscreenAlbum.class);
+        intent.putExtra("cover",cover);
         startActivity(intent);
         //budu si nieco posielat....
     }
