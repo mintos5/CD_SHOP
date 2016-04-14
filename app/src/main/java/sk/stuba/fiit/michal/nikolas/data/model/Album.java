@@ -166,7 +166,7 @@ public class Album {
     }
 
     public boolean parseSongsFromString(String songsText) {
-        this.songs = Arrays.asList(songsText.split("\\s*,\\s*"));
+        this.songs = Arrays.asList(songsText.split("\\s*;\\s*"));
         return (this.songs != null);
     }
 

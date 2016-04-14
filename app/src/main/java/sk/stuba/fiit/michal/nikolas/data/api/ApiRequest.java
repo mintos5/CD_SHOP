@@ -19,11 +19,13 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
+import sk.stuba.fiit.michal.nikolas.cd_shop.exception.ApiException;
 import sk.stuba.fiit.michal.nikolas.data.model.Album;
 import sk.stuba.fiit.michal.nikolas.data.sqlite.*;
 
@@ -33,7 +35,7 @@ import sk.stuba.fiit.michal.nikolas.data.sqlite.*;
 public class ApiRequest {
 
 
-    public static List<Album> getList(String... params) throws IOException {
+    public static List<Album> getList(String... params) throws IOException, ApiException {
         HttpURLConnection connection = null;
         BufferedReader reader = null;
         URL url = null;
@@ -45,6 +47,8 @@ public class ApiRequest {
             connection.addRequestProperty("secret-key",
                     "A4082182-4C7A-E9E8-FFF4-2D69B1025700");
             connection.connect();
+            if (connection.getResponseCode() != 200)
+                throw new ApiException( connection.getResponseCode());
             InputStream stream = connection.getInputStream();
             reader = new BufferedReader(new InputStreamReader(stream));
             StringBuffer buffer = new StringBuffer();
@@ -68,7 +72,7 @@ public class ApiRequest {
     }
 
 
-    public static void deletAlbum(Album album){
+    public static void deletAlbum(Album album) throws ApiException {
         HttpURLConnection connection = null;
         URL url = null;
         BufferedReader reader = null;
@@ -82,6 +86,9 @@ public class ApiRequest {
                     "A4082182-4C7A-E9E8-FFF4-2D69B1025700");
             connection.setRequestMethod("DELETE");
             connection.connect();
+
+            if (connection.getResponseCode() != 200)
+               throw new ApiException( connection.getResponseCode());
             InputStream stream = connection.getInputStream();
             reader = new BufferedReader(new InputStreamReader(stream));
             StringBuffer buffer = new StringBuffer();
@@ -98,7 +105,7 @@ public class ApiRequest {
         }
     }
 
-    public static Album getDetailAlbum(Album album) throws IOException {
+    public static Album getDetailAlbum(Album album) throws IOException, ApiException {
         HttpURLConnection connection = null;
         BufferedReader reader = null;
         URL url = null;
@@ -110,6 +117,8 @@ public class ApiRequest {
             connection.addRequestProperty("secret-key",
                     "A4082182-4C7A-E9E8-FFF4-2D69B1025700");
             connection.connect();
+            if (connection.getResponseCode() != 200)
+                throw new ApiException( connection.getResponseCode());
             InputStream stream = connection.getInputStream();
             reader = new BufferedReader(new InputStreamReader(stream));
             StringBuffer buffer = new StringBuffer();
@@ -131,7 +140,7 @@ public class ApiRequest {
         return null;
 
     }
-    public static void updateAlbum(Album album) throws IOException {
+    public static void updateAlbum(Album album) throws IOException, ApiException {
         HttpURLConnection connection = null;
         URL url = null;
         BufferedReader reader = null;
@@ -160,10 +169,12 @@ public class ApiRequest {
             connection.setRequestMethod("PUT");
             connection.addRequestProperty("Content-Type", "application/json");
             OutputStreamWriter out = new OutputStreamWriter(connection.getOutputStream());
-            System.out.println("meesssaaaagggeee " + message);
+           // System.out.println("meesssaaaagggeee " + message);
             out.write(message);
             out.close();
             connection.connect();
+            if (connection.getResponseCode() != 200)
+                throw new ApiException( connection.getResponseCode());
             InputStream stream = connection.getInputStream();
             reader = new BufferedReader(new InputStreamReader(stream));
             StringBuffer buffer = new StringBuffer();
@@ -177,5 +188,41 @@ public class ApiRequest {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+// poslels mi to tu ako "genre = '1'"
+    public static List<Album> getSortList(String params) throws IOException, ApiException {
+        HttpURLConnection connection = null;
+        BufferedReader reader = null;
+        URL url = null;
+        try {
+            url = new URL("https://api.backendless.com/v1/data/cds?props=album_name%2Cartist%2CobjectId&where="+URLEncoder.encode(params, "UTF-8"));
+            connection = (HttpURLConnection) url.openConnection();
+            connection.addRequestProperty("application-id",
+                    "F9615D38-AE50-A389-FF5E-8BD658331900");
+            connection.addRequestProperty("secret-key",
+                    "A4082182-4C7A-E9E8-FFF4-2D69B1025700");
+            connection.connect();
+            if (connection.getResponseCode() != 200)
+                throw new ApiException( connection.getResponseCode());
+            InputStream stream = connection.getInputStream();
+            reader = new BufferedReader(new InputStreamReader(stream));
+            StringBuffer buffer = new StringBuffer();
+            String line = "";
+            while((line = reader.readLine()) != null){
+                buffer.append(line);
+            }
+            String finalJson = buffer.toString();
+
+            return AlbumHelper.getList(finalJson);
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            throw e;
+            //e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

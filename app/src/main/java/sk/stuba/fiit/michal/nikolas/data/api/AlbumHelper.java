@@ -52,6 +52,7 @@ public class AlbumHelper {
         album.setSales(parentObject.getBoolean("sales"));;
         album.setUrl(parentObject.getString("album_url"));
         album.setPicture(image(album.getUrl()));
+        album.parseSongsFromString(parentObject.getString("songs"));
         return album;
     }
 
