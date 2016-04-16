@@ -18,4 +18,10 @@
         android:icon="@drawable/ic_add_white"
         app:showAsAction="ifRoom"
         android:visible="false"/>
+    <item
+        android:id="@+id/action_modify_album"
+        android:title="Rename album name"
+        android:icon="@drawable/ic_add_white"
+        app:showAsAction="never"
+        android:visible="false"/>
 </menu>

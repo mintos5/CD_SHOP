@@ -1,10 +1,14 @@
 package sk.stuba.fiit.michal.nikolas.cd_shop.activity;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -106,5 +110,37 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra("cover",cover);
         startActivity(intent);
         //budu si nieco posielat....
+    }
+
+    public boolean connectionTest() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean test = cm.getActiveNetworkInfo() != null;
+        if (test) {
+            return test;
+        }
+        else {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+            dialog.setTitle("Network error");
+            dialog.setMessage("No internet connection");
+            dialog.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    // continue to login
+                }
+            });
+            dialog.show();
+            return test;
+        }
+    }
+
+    public void customDialog(String text) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("Error");
+        dialog.setMessage(text);
+        dialog.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                // continue to login
+            }
+        });
+        dialog.show();
     }
 }

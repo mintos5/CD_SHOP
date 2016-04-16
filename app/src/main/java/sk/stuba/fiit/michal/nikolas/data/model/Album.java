@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -139,7 +140,7 @@ public class Album {
         return count;
     }
 
-    public void setCount(int rating) {
+    public void setCount(int count) {
         this.count = count;
     }
 
@@ -168,7 +169,8 @@ public class Album {
     }
 
     public boolean parseSongsFromString(String songsText) {
-        this.songs = Arrays.asList(songsText.split("\\s*;\\s*"));
+        List<String> help = Arrays.asList(songsText.split("\\s*;\\s*"));
+        this.songs = new ArrayList<String>(help);
         return (this.songs != null);
     }
 

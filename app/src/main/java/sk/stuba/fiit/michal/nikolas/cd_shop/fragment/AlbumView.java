@@ -31,6 +31,10 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -52,11 +56,11 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
 
     private View header;
-    private String title;
     private SwipeRefreshLayout swipeRefreshLayout;
 
     private Album albumDetail;
     private String albumId;
+    private List<String> songListRemove;
 
     private Spinner spinnerRegion;
     private Spinner spinnerDecade;
@@ -73,14 +77,13 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
     public AlbumView() {
         // Required empty public constructor
+        songListRemove = new ArrayList<String>();
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        title = "Nazov albumu";
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(title);
         header = inflater.inflate(R.layout.fragment_album_header, null, false);
         setHasOptionsMenu(true);
         Bundle args = getArguments();
@@ -92,10 +95,8 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getListView().addHeaderView(header);
-        //getListView().setOnItemClickListener(this);
-        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        getListView().setMultiChoiceModeListener(this);
-
+        getListView().setClickable(false);
+        getListView().setLongClickable(false);
 
         swipeRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swipe_refresh_album);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -106,8 +107,6 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
                                     }
                                 }
         );
-        System.out.println("Test2");
-        //fillText();
     }
 
     @Override
@@ -130,33 +129,39 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_modify) {
             Toast.makeText(getActivity(), "Editing", Toast.LENGTH_SHORT).show();
-            spinnerRegion.setEnabled(true);
-            spinnerRegion.setClickable(true);
-            editTextPrice.setInputType(InputType.TYPE_CLASS_NUMBER);
-            dateDialog.updateDate(2000, 1, 1);
-            //dateDialog.show();
 
+            menu.findItem(R.id.action_modify).setVisible(false);
+            menu.findItem(R.id.action_save).setVisible(true);
+            menu.findItem(R.id.action_add).setVisible(true);
+            menu.findItem(R.id.action_modify_album).setVisible(true);
+
+            enterText();
+            return true;
+        }
+
+        if (id == R.id.action_add) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle("Add song");
-            // I'm using fragment here so I'm using getView() to provide ViewGroup
-            // but you can provide here any other instance of ViewGroup from your Fragment / Activity
-            View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.song_dialog, (ViewGroup) getView(), false);
+            View viewInflated = LayoutInflater.from(getContext()).inflate(R.layout.song_dialog,(ViewGroup)getView(), false);
             // Set up the input
-            EditText input = (EditText) viewInflated.findViewById(R.id.editTextNumber);
-            EditText num = (EditText) viewInflated.findViewById(R.id.editTextSong);
-            int cena = Integer.parseInt(num.getText().toString());
+            final EditText num = (EditText) viewInflated.findViewById(R.id.editTextNumber);
+            final EditText input = (EditText) viewInflated.findViewById(R.id.editTextSong);
             // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-
-
+            builder.setView(viewInflated);
             // Set up the buttons
             builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
+                    int order = Integer.parseInt(num.getText().toString());
+                    if (order > albumDetail.getSongs().size()) {
+                        ((MainActivity) getActivity()).customDialog("Enter correct song number.");
+                        //albumDetail.getSongs().add(order, input.getText().toString());
+                    } else {
+                        albumDetail.getSongs().add(order, input.getText().toString());
+                        dialog.dismiss();
+                    }
                     //m_Text = input.getText().toString();
                 }
             });
@@ -168,17 +173,35 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
             });
 
             builder.show();
-
-
-
-            return true;
         }
 
-        if (id == R.id.action_add) {
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.detach(this).attach(this).commit();
-            //menu.findItem(R.id.action_save).setVisible(true);
-            //menu.findItem(R.id.action_add).setVisible(true);
+        if (id == R.id.action_save) {
+            saveText();
+            new AsyncUpdateDetail(this).execute(albumDetail);
+        }
+
+        if (id == R.id.action_modify_album) {
+            final EditText albumName = new EditText(getContext());
+            albumName.setText(albumDetail.getName());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Rename album name");
+            builder.setView(albumName);
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    albumDetail.setName(albumName.getText().toString());
+                    MainActivity activity = (MainActivity)getActivity();
+                    activity.getSupportActionBar().setTitle(albumDetail.getName());
+                }
+            });
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            builder.show();
+
         }
 
         return super.onOptionsItemSelected(item);
@@ -188,10 +211,14 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         dateDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-
+                Calendar calendar = Calendar.getInstance();
+                calendar.clear();
+                calendar.set(year, monthOfYear, dayOfMonth);
+                albumDetail.setReleaseDate(calendar.getTime());
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+                editTextReleased.setText(dateFormat.format(albumDetail.getReleaseDate()));
             }
         },year,month,day);
-
         spinnerRegion = (Spinner)header.findViewById(R.id.spinnerRegion);
         spinnerDecade = (Spinner)header.findViewById(R.id.spinnerDecade);
         spinnerGenre = (Spinner)header.findViewById(R.id.spinnerGenre);
@@ -201,16 +228,21 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         imageView = (ImageView)header.findViewById(R.id.imageViewCover);
         checkBox = (CheckBox)header.findViewById(R.id.checkBox);
         editTextReleased = (EditText)header.findViewById(R.id.editTextReleased);
+        editTextReleased.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dateDialog.updateDate(2000, 1, 1);
+                dateDialog.show();
+            }
+        });
     }
 
     private void fillText() {
         setViews();
-
         MainActivity activity = (MainActivity)getActivity();
         activity.getSupportActionBar().setTitle(albumDetail.getName());
         activity.setCover(albumDetail.getPicture());
         imageView.setImageBitmap(albumDetail.getPicture());
-
 
         spinnerRegion.setEnabled(false);
         spinnerRegion.setClickable(false);
@@ -231,11 +263,50 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         editTextPrice.setText(String.valueOf(albumDetail.getPrice() / 100.00));
         editTextStock.setText(String.valueOf(albumDetail.getCount()));
         checkBox.setEnabled(albumDetail.getSales());
-        editTextReleased.setText(albumDetail.getReleaseDate().toString());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        editTextReleased.setText(dateFormat.format(albumDetail.getReleaseDate()));
 
         ArrayAdapter adapter;
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_activated_1, albumDetail.getSongs());
         setListAdapter(adapter);
+
+    }
+
+    private void enterText() {
+        getListView().setClickable(true);
+        getListView().setLongClickable(true);
+        getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        getListView().setMultiChoiceModeListener(this);
+
+        spinnerRegion.setEnabled(true);
+        spinnerRegion.setClickable(true);
+
+        spinnerDecade.setEnabled(true);
+        spinnerDecade.setClickable(true);
+
+        spinnerGenre.setEnabled(true);
+        spinnerGenre.setClickable(true);
+
+        editTextPrice.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        editTextArtist.setEnabled(true);
+        editTextStock.setInputType(InputType.TYPE_CLASS_NUMBER);
+        editTextReleased.setEnabled(true);
+        editTextReleased.setClickable(true);
+        checkBox.setEnabled(true);
+        checkBox.setClickable(true);
+    }
+
+    private void saveText() {
+        Double price = Double.parseDouble(editTextPrice.getText().toString());
+        price = price* 100;
+        albumDetail.setArtist(editTextArtist.getText().toString());
+        albumDetail.setPrice(price.intValue());
+        albumDetail.setCount(Integer.parseInt(editTextStock.getText().toString()));
+        albumDetail.setSales(checkBox.isSelected());
+
+        albumDetail.setCountry(spinnerRegion.getSelectedItemPosition());
+        albumDetail.setDecade(spinnerDecade.getSelectedItemPosition());
+        albumDetail.setGenre(spinnerGenre.getSelectedItemPosition());
 
     }
 
@@ -250,6 +321,12 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
             default:
                 mode.setSubtitle("" + selectCount + " items selected");
                 break;
+        }
+        if (checked) {
+            //counting from 1 not from 0
+            songListRemove.add(albumDetail.getSongs().get(position-1));
+        } else {
+            songListRemove.remove(albumDetail.getSongs().get(position-1));
         }
     }
 
@@ -274,6 +351,11 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_delete) {
             Toast.makeText(getActivity(), "Deleting", Toast.LENGTH_SHORT).show();
+            int i =0;
+            for (String song1 : songListRemove) {
+                albumDetail.getSongs().remove(song1);
+                i++;
+            }
             mode.finish();
             return true;
         }
@@ -320,6 +402,36 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
             }
             fillText();
             swipeRefreshLayout.setRefreshing(false);
+        }
+
+    }
+
+    private class AsyncUpdateDetail extends AsyncTask<Album, Void, Void> {
+
+        private ApiException error;
+        private Fragment fragment;
+
+        public  AsyncUpdateDetail(Fragment fragment) {
+            this.fragment = fragment;
+        }
+
+        @Override
+        protected Void doInBackground(Album... params) {
+            try {
+                ApiRequest.updateAlbum(params[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ApiException e) {
+                error = e;
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void result){
+            super.onPostExecute(result);
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.detach(fragment).attach(fragment).commit();
         }
 
     }
