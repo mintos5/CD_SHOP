@@ -206,7 +206,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
 
     private class AsyncGet extends AsyncTask<String, Void, List<Album>> {
 
-        private ApiException error;
+        private Exception error;
 
         public  AsyncGet() {
         }
@@ -228,6 +228,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                error = e;
             } catch (ApiException e) {
                 e.printStackTrace();
                 error = e;
@@ -239,7 +240,9 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
             super.onPostExecute(result);
             if (error != null) {
                 System.out.println("Riesenie chyby");
-                ((MainActivity)getActivity()).customDialog("Error code: " + new Integer(error.getError_code()).toString());
+                ((MainActivity)getActivity()).customDialog(error.toString());
+                swipeRefreshLayout.setRefreshing(false);
+                return;
             }
             albumList = result;
             TestAdapter adapter = new TestAdapter(getContext(),result);
@@ -254,7 +257,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
 
     private class AsyncDelete extends AsyncTask<String, Void, Void> {
 
-        private ApiException error;
+        private Exception error;
         private Fragment fragment;
         public  AsyncDelete(Fragment fragment) {
             this.fragment = fragment;
@@ -277,7 +280,8 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
             super.onPostExecute(result);
             if (error != null) {
                 System.out.println("Riesenie chyby");
-                ((MainActivity)getActivity()).customDialog("Error code: " + new Integer(error.getError_code()).toString());
+                ((MainActivity)getActivity()).customDialog(error.toString());
+                return;
             }
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.detach(fragment).attach(fragment).commit();

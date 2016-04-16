@@ -11,7 +11,10 @@ public class ApiException extends Exception {
         this.error_code = error_code;
     }
 
-    public int getError_code() {
-        return error_code;
+    @Override
+    public String toString() {
+        return "ApiException{" +
+                "error_code=" + error_code +
+                '}';
     }
 }

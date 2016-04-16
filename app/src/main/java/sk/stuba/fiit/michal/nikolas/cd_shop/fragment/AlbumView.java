@@ -379,7 +379,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
     private class AsyncGetDetail extends AsyncTask<String, Void, Album> {
 
-        private ApiException error;
+        private Exception error;
 
         public  AsyncGetDetail() {
         }
@@ -408,7 +408,8 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
             }
             if (error != null) {
                 System.out.println("Riesenie chyby");
-                ((MainActivity)getActivity()).customDialog("Error code: " + new Integer(error.getError_code()).toString());
+                ((MainActivity)getActivity()).customDialog(error.toString());
+                return;
             }
             fillText();
             swipeRefreshLayout.setRefreshing(false);
@@ -418,7 +419,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
     private class AsyncUpdateDetail extends AsyncTask<Album, Void, Void> {
 
-        private ApiException error;
+        private Exception error;
         private Fragment fragment;
 
         public  AsyncUpdateDetail(Fragment fragment) {
@@ -442,7 +443,8 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
             super.onPostExecute(result);
             if (error != null) {
                 System.out.println("Riesenie chyby");
-                ((MainActivity)getActivity()).customDialog("Error code: " + new Integer(error.getError_code()).toString());
+                ((MainActivity)getActivity()).customDialog(error.toString());
+                return;
             }
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.detach(fragment).attach(fragment).commit();
