@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
+import sk.stuba.fiit.michal.nikolas.cd_shop.activity.MainActivity;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
 import sk.stuba.fiit.michal.nikolas.cd_shop.exception.ApiException;
 import sk.stuba.fiit.michal.nikolas.data.api.ApiRequest;
@@ -173,10 +174,8 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
                 hashArray[i]=alb1.getRecordHash();
                 i++;
             }
-            new AsyncDelete().execute(hashArray);
+            new AsyncDelete(this).execute(hashArray);
             mode.finish();
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.detach(this).attach(this).commit();
             return true;
         }
 
@@ -240,6 +239,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
             super.onPostExecute(result);
             if (error != null) {
                 System.out.println("Riesenie chyby");
+                ((MainActivity)getActivity()).customDialog("Error code: " + new Integer(error.getError_code()).toString());
             }
             albumList = result;
             TestAdapter adapter = new TestAdapter(getContext(),result);
@@ -255,7 +255,10 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
     private class AsyncDelete extends AsyncTask<String, Void, Void> {
 
         private ApiException error;
-        public  AsyncDelete() {}
+        private Fragment fragment;
+        public  AsyncDelete(Fragment fragment) {
+            this.fragment = fragment;
+        }
 
         @Override
         protected Void doInBackground(String... params) {
@@ -272,7 +275,12 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
 
         protected void onPostExecute(Void result){
             super.onPostExecute(result);
-
+            if (error != null) {
+                System.out.println("Riesenie chyby");
+                ((MainActivity)getActivity()).customDialog("Error code: " + new Integer(error.getError_code()).toString());
+            }
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.detach(fragment).attach(fragment).commit();
         }
 
     }

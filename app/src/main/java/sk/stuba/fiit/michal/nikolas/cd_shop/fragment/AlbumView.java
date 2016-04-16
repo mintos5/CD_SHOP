@@ -228,6 +228,15 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         imageView = (ImageView)header.findViewById(R.id.imageViewCover);
         checkBox = (CheckBox)header.findViewById(R.id.checkBox);
         editTextReleased = (EditText)header.findViewById(R.id.editTextReleased);
+        editTextReleased.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    dateDialog.updateDate(2000, 1, 1);
+                    dateDialog.show();
+                }
+            }
+        });
         editTextReleased.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -399,6 +408,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
             }
             if (error != null) {
                 System.out.println("Riesenie chyby");
+                ((MainActivity)getActivity()).customDialog("Error code: " + new Integer(error.getError_code()).toString());
             }
             fillText();
             swipeRefreshLayout.setRefreshing(false);
@@ -430,6 +440,10 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
         protected void onPostExecute(Void result){
             super.onPostExecute(result);
+            if (error != null) {
+                System.out.println("Riesenie chyby");
+                ((MainActivity)getActivity()).customDialog("Error code: " + new Integer(error.getError_code()).toString());
+            }
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.detach(fragment).attach(fragment).commit();
         }

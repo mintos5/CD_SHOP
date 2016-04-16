@@ -10,4 +10,8 @@ public class ApiException extends Exception {
     public ApiException(int error_code) {
         this.error_code = error_code;
     }
+
+    public int getError_code() {
+        return error_code;
+    }
 }
