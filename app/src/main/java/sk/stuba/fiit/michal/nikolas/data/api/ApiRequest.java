@@ -166,7 +166,7 @@ public class ApiRequest {
             json.put("album_url",album.getUrl());
             json.put("songs",album.getSongs());
             //DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss", Locale.US);
-            json.put("release_date", album.getReleaseDate().getTime()/1000);
+            json.put("release_date", album.getReleaseDate().getTime());
             message = json.toString();
             url = new URL (String.format("https://api.backendless.com/v1/data/cds/%s",album.getRecordHash()));
             connection = (HttpURLConnection) url.openConnection();
