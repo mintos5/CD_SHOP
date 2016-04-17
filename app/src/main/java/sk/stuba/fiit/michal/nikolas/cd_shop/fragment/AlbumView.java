@@ -113,7 +113,12 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
     @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
-        new AsyncGetDetail().execute(albumId);
+        if ( ((MainActivity)getActivity()).connectionTest() ){
+            new AsyncGetDetail().execute(albumId);
+        }
+        else {
+            swipeRefreshLayout.setRefreshing(false);
+        }
     }
 
 
@@ -178,7 +183,9 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
         if (id == R.id.action_save) {
             saveText();
-            new AsyncUpdateDetail(this).execute(albumDetail);
+            if ( ((MainActivity)getActivity()).connectionTest() ){
+                new AsyncUpdateDetail(this).execute(albumDetail);
+            }
         }
 
         if (id == R.id.action_modify_album) {
@@ -229,15 +236,6 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         imageView = (ImageView)header.findViewById(R.id.imageViewCover);
         checkBox = (CheckBox)header.findViewById(R.id.checkBox);
         editTextReleased = (EditText)header.findViewById(R.id.editTextReleased);
-        editTextReleased.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    dateDialog.updateDate(2000, 1, 1);
-                    dateDialog.show();
-                }
-            }
-        });
         editTextReleased.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -272,7 +270,8 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         editTextArtist.setText(albumDetail.getArtist());
         editTextPrice.setText(String.valueOf(albumDetail.getPrice() / 100.00));
         editTextStock.setText(String.valueOf(albumDetail.getCount()));
-        checkBox.setEnabled(albumDetail.getSales());
+
+        checkBox.setChecked(albumDetail.getSales());
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         editTextReleased.setText(dateFormat.format(albumDetail.getReleaseDate()));
 
@@ -302,7 +301,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         editTextStock.setInputType(InputType.TYPE_CLASS_NUMBER);
         editTextReleased.setEnabled(true);
         editTextReleased.setClickable(true);
-        checkBox.setEnabled(true);
+
         checkBox.setClickable(true);
     }
 
@@ -312,7 +311,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         albumDetail.setArtist(editTextArtist.getText().toString());
         albumDetail.setPrice(price.intValue());
         albumDetail.setCount(Integer.parseInt(editTextStock.getText().toString()));
-        albumDetail.setSales(checkBox.isSelected());
+        albumDetail.setSales(checkBox.isChecked());
 
         albumDetail.setCountry(spinnerRegion.getSelectedItemPosition());
         albumDetail.setDecade(spinnerDecade.getSelectedItemPosition());
@@ -391,6 +390,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
                 return ApiRequest.getDetailAlbum(params[0]);
             } catch (IOException e) {
                 e.printStackTrace();
+                error = e;
             } catch (ApiException e) {
                 e.printStackTrace();
                 error = e;

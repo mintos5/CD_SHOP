@@ -39,6 +39,9 @@ import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.activity.MainActivity;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
 import sk.stuba.fiit.michal.nikolas.cd_shop.exception.ApiException;
+import sk.stuba.fiit.michal.nikolas.cd_shop.model.DecadeEnum;
+import sk.stuba.fiit.michal.nikolas.cd_shop.model.GenresEnum;
+import sk.stuba.fiit.michal.nikolas.cd_shop.model.RegionEnum;
 import sk.stuba.fiit.michal.nikolas.data.api.ApiRequest;
 import sk.stuba.fiit.michal.nikolas.data.model.Album;
 
@@ -99,6 +102,15 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
         if (args!= null) {
             enumType = args.getString("enumType");
             enumNum = args.getInt("enumNum");
+            if (enumType.equals("genre")) {
+                ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(GenresEnum.getByValue(enumNum).getStringName());
+            }
+            if (enumType.equals("decade")) {
+                ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(DecadeEnum.getByValue(enumNum).getStringName());
+            }
+            if (enumType.equals("country")) {
+                ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(RegionEnum.getByValue(enumNum).getStringName());
+            }
         }
 
 
