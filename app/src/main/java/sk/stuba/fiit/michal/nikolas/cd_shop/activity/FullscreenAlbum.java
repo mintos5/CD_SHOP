@@ -3,6 +3,7 @@ package sk.stuba.fiit.michal.nikolas.cd_shop.activity;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 import android.widget.ImageView;
+
+import java.io.FileNotFoundException;
 
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 
@@ -95,11 +98,15 @@ public class FullscreenAlbum extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_fullscreen_album);
-
-        Intent intent = getIntent();
-        Bitmap bitmap = (Bitmap) intent.getParcelableExtra("cover");
+        Bitmap bitmap = null;
+        try {
+            bitmap = BitmapFactory.decodeStream(this.openFileInput("cover"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
         ImageView imageView = (ImageView)findViewById(R.id.fullscreen_image);
         imageView.setImageBitmap(bitmap);
+        //this.deleteFile();
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

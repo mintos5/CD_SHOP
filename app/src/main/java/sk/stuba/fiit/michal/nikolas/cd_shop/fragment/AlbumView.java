@@ -40,6 +40,7 @@ import java.util.concurrent.ExecutionException;
 
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.activity.MainActivity;
+import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.SongAdapter;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.SpinnerItemAdapter;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
 import sk.stuba.fiit.michal.nikolas.cd_shop.exception.ApiException;
@@ -155,11 +156,11 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     int order = Integer.parseInt(num.getText().toString());
-                    if (order > albumDetail.getSongs().size()) {
+                    if (order > ( albumDetail.getSongs().size()+1) ) {
                         ((MainActivity) getActivity()).customDialog("Enter correct song number.");
                         //albumDetail.getSongs().add(order, input.getText().toString());
                     } else {
-                        albumDetail.getSongs().add(order, input.getText().toString());
+                        albumDetail.getSongs().add(order-1, input.getText().toString());
                         dialog.dismiss();
                     }
                     //m_Text = input.getText().toString();
@@ -277,7 +278,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
         ArrayAdapter adapter;
         adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_activated_1, albumDetail.getSongs());
-        setListAdapter(adapter);
+        setListAdapter(new SongAdapter(getActivity(),albumDetail.getSongs()));
 
     }
 

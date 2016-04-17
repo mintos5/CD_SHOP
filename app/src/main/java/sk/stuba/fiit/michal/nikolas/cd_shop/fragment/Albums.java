@@ -139,11 +139,16 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
     @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
-        if (enumType== null) {
-            new AsyncGet().execute("");
+        if ( ((MainActivity)getActivity()).connectionTest() ){
+            if (enumType== null) {
+                new AsyncGet().execute("");
+            }
+            else {
+                new AsyncGet().execute(enumType, new Integer(enumNum).toString());
+            }
         }
         else {
-            new AsyncGet().execute(enumType, new Integer(enumNum).toString());
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -205,9 +210,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
     }
 
     private class AsyncGet extends AsyncTask<String, Void, List<Album>> {
-
         private Exception error;
-
         public  AsyncGet() {
         }
 

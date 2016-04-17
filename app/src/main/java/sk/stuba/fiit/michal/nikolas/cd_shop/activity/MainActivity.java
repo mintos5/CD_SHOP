@@ -19,6 +19,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import sk.stuba.fiit.michal.nikolas.cd_shop.fragment.AlbumView;
 import sk.stuba.fiit.michal.nikolas.cd_shop.fragment.Albums;
 import sk.stuba.fiit.michal.nikolas.cd_shop.fragment.Decades;
@@ -106,10 +111,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void showMe(View view) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        cover.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        FileOutputStream fo = null;
+        try {
+            fo = openFileOutput("cover", Context.MODE_PRIVATE);
+            fo.write(bytes.toByteArray());
+            fo.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Intent intent = new Intent(this, FullscreenAlbum.class);
-        intent.putExtra("cover",cover);
         startActivity(intent);
-        //budu si nieco posielat....
     }
 
     public boolean connectionTest() {

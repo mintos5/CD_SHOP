@@ -164,7 +164,7 @@ public class ApiRequest {
             json.put("price",album.getPrice());
             json.put("sales",album.getSales());
             json.put("album_url",album.getUrl());
-            json.put("songs",album.getSongs());
+            json.put("songs",album.getSongstoString());
             //DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy hh:mm:ss", Locale.US);
             json.put("release_date", album.getReleaseDate().getTime());
             message = json.toString();

@@ -178,6 +178,14 @@ public class Album {
         return songs;
     }
 
+    public String getSongstoString(){
+        String listString = "";
+        for (String s : getSongs()) {
+            listString += s + ";";
+        }
+        return listString;
+    }
+
     public boolean setReleaseDateFromString(String datetime) {
 
         Timestamp unixTime = new Timestamp(Long.valueOf(datetime));

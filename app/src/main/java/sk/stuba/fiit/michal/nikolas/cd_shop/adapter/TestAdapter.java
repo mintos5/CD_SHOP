@@ -67,6 +67,10 @@ public class TestAdapter extends BaseAdapter {
         else
         {
             gridView = (CheckableLayout) convertView;
+            TextView txt = (TextView) gridView.findViewById(R.id.name);
+            txt.setText(albumList.get(position).getName());
+            TextView txt2 = (TextView) gridView.findViewById(R.id.artist);
+            txt2.setText(albumList.get(position).getArtist());
         }
         return gridView;
     }
