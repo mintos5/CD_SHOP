@@ -3,6 +3,7 @@ package sk.stuba.fiit.michal.nikolas.cd_shop.fragment;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -61,6 +62,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
     private Album albumDetail;
     private String albumId;
+    private String albumName;
     private List<String> songListRemove;
 
     private Spinner spinnerRegion;
@@ -89,6 +91,8 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         setHasOptionsMenu(true);
         Bundle args = getArguments();
         albumId = args.getString("id");
+        albumName = args.getString("albumName");
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_album_list, container, false);
     }
@@ -100,14 +104,36 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         getListView().setLongClickable(false);
 
         swipeRefreshLayout = (SwipeRefreshLayout) getView().findViewById(R.id.swipe_refresh_album);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        onRefresh();
+        if (albumId != null) {
+            swipeRefreshLayout.setOnRefreshListener(this);
+            swipeRefreshLayout.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            onRefresh();
+                                        }
                                     }
-                                }
-        );
+            );
+        }
+        else {
+            albumDetail = new Album();
+            albumDetail.setName(albumName);
+            albumDetail.setSongs(new ArrayList<String>());
+            setViews();
+            imageView.setImageResource(R.drawable.cd_case);
+            spinnerRegion.setAdapter(new SpinnerItemAdapter(getActivity(), RegionEnum.getAllNames()));
+            spinnerDecade.setAdapter(new SpinnerItemAdapter(getActivity(), DecadeEnum.getAllNames()));
+            spinnerGenre.setAdapter(new SpinnerItemAdapter(getActivity(), GenresEnum.getAllNames()));
+
+            MainActivity activity = (MainActivity)getActivity();
+            activity.getSupportActionBar().setTitle(albumDetail.getName());
+            activity.setCover(((BitmapDrawable) imageView.getDrawable()).getBitmap());
+
+            enterText();
+            ArrayAdapter adapter;
+            adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_activated_1, albumDetail.getSongs());
+            setListAdapter(new SongAdapter(getActivity(), albumDetail.getSongs()));
+
+        }
     }
 
     @Override
@@ -126,6 +152,12 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.album_edit, menu);
         this.menu = menu;
+        if (albumId== null) {
+            menu.findItem(R.id.action_modify).setVisible(false);
+            menu.findItem(R.id.action_save).setVisible(true);
+            menu.findItem(R.id.action_add).setVisible(true);
+            menu.findItem(R.id.action_modify_album).setVisible(true);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -184,7 +216,10 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         if (id == R.id.action_save) {
             saveText();
             if ( ((MainActivity)getActivity()).connectionTest() ){
-                new AsyncUpdateDetail(this).execute(albumDetail);
+                if (albumId!=null) {
+                    new AsyncUpdateDetail(this).execute(albumDetail);
+                }
+                    new AsyncCreateDetail(this).execute(albumDetail);
             }
         }
 
@@ -447,6 +482,54 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
                 ((MainActivity)getActivity()).customDialog(error.toString());
                 return;
             }
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.detach(fragment).attach(fragment).commit();
+        }
+
+    }
+
+    private class AsyncCreateDetail extends AsyncTask<Album, Void, String> {
+
+        private Exception error;
+        private Fragment fragment;
+
+        public  AsyncCreateDetail(Fragment fragment) {
+            this.fragment = fragment;
+        }
+
+
+        @Override
+        protected String doInBackground(Album... params) {
+            try {
+                ApiRequest.updateAlbum(params[0]);
+                // return ApiRequest.createAlbum(params[0]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ApiException e) {
+                error = e;
+                e.printStackTrace();
+            }
+            return "test";
+        }
+
+        protected void onPostExecute(String result){
+            super.onPostExecute(result);
+            String id = "";
+            try {
+                id = get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+            if (error != null) {
+                System.out.println("Riesenie chyby");
+                ((MainActivity)getActivity()).customDialog(error.toString());
+                return;
+            }
+            Bundle transData = new Bundle();
+            transData.putString("id", id);
+            fragment.setArguments(transData);
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft.detach(fragment).attach(fragment).commit();
         }

@@ -168,6 +168,10 @@ public class Album {
         this.updatedAt = updatedAt;
     }
 
+    public void setSongs(List<String> songs) {
+        this.songs = songs;
+    }
+
     public boolean parseSongsFromString(String songsText) {
         List<String> help = Arrays.asList(songsText.split("\\s*;\\s*"));
         this.songs = new ArrayList<String>(help);

@@ -170,6 +170,7 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
         menuInflater.inflate(R.menu.cab, menu);
         mode.setTitle("Select Items");
         mode.setSubtitle("One item selected");
+        albumListRemove.clear();
         return true;
     }
 

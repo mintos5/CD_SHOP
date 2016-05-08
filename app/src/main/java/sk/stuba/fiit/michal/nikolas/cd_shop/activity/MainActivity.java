@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -155,6 +156,36 @@ public class MainActivity extends AppCompatActivity
         dialog.setNeutralButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 // continue to login
+            }
+        });
+        dialog.show();
+    }
+
+    public void createAlbum(View view) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+        dialog.setTitle("New Album name:");
+        final EditText input = new EditText(this);
+        dialog.setView(input);
+        dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String id = null;
+                String albumName = input.getText().toString();
+                Bundle transData = new Bundle();
+                transData.putString("id",id);
+                transData.putString("albumName",albumName);
+                AlbumView frag = new AlbumView();
+                frag.setArguments(transData);
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.frame, frag)
+                        .addToBackStack("tag");
+                fragmentTransaction.commit();
+            }
+        });
+        dialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
             }
         });
         dialog.show();
