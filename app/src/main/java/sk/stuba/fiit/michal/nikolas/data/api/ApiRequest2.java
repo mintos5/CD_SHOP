@@ -70,6 +70,9 @@ public class ApiRequest2 {
         synchronized(connectObj) {
             while(ApiRequest2.isTest() == false) {
                 System.out.println("Testujem test");
+                if (!sock.connected()){
+                    sock.connect();
+                }
                 connectObj.wait();
                 System.out.println("Testujem test2");
             }

@@ -113,7 +113,16 @@ public class MainActivity extends AppCompatActivity
                     retries = 0;
                     ApiRequest2.setError(new ApiException(500));
                     ApiRequest2.open();
+                    ApiRequest2.openEvent();
                 }
+            }
+        });
+
+        socket.on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("DISCONECTED");
+                ApiRequest2.setTest(false);
             }
         });
         socket.connect();

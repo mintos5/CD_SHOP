@@ -160,6 +160,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
             menu.findItem(R.id.action_save).setVisible(true);
             menu.findItem(R.id.action_add).setVisible(true);
             menu.findItem(R.id.action_modify_album).setVisible(true);
+            menu.findItem(R.id.action_modify_album_URL).setVisible(true);
         }
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -177,6 +178,7 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
             menu.findItem(R.id.action_save).setVisible(true);
             menu.findItem(R.id.action_add).setVisible(true);
             menu.findItem(R.id.action_modify_album).setVisible(true);
+            menu.findItem(R.id.action_modify_album_URL).setVisible(true);
 
             enterText();
             return true;
@@ -196,11 +198,11 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     int order = Integer.parseInt(num.getText().toString());
-                    if (order > ( albumDetail.getSongs().size()+1) ) {
+                    if (order > (albumDetail.getSongs().size() + 1) || order == 0) {
                         ((MainActivity) getActivity()).customDialog("Enter correct song number.");
                         //albumDetail.getSongs().add(order, input.getText().toString());
                     } else {
-                        albumDetail.getSongs().add(order-1, input.getText().toString());
+                        albumDetail.getSongs().add(order - 1, input.getText().toString());
                         dialog.dismiss();
                     }
                     //m_Text = input.getText().toString();
@@ -217,7 +219,12 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         }
 
         if (id == R.id.action_save) {
-            saveText();
+            try {
+                saveText();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
             MainActivity mainActivity = (MainActivity)getActivity();
             if (mainActivity.connectionTest() ){
                 if (albumId!=null) {
@@ -241,6 +248,30 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
                     albumDetail.setName(albumName.getText().toString());
                     MainActivity activity = (MainActivity)getActivity();
                     activity.getSupportActionBar().setTitle(albumDetail.getName());
+                }
+            });
+            builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            builder.show();
+
+        }
+
+        if (id == R.id.action_modify_album_URL) {
+            final EditText albumName = new EditText(getContext());
+            albumName.setText(albumDetail.getUrl());
+            albumName.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Change image URL");
+            builder.setView(albumName);
+            builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    albumDetail.setUrl(albumName.getText().toString());
+                    Toast.makeText(getActivity(), "Image will load after refresh", Toast.LENGTH_SHORT).show();
                 }
             });
             builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -346,12 +377,24 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         checkBox.setClickable(true);
     }
 
-    private void saveText() {
-        Double price = Double.parseDouble(editTextPrice.getText().toString());
+    private void saveText() throws Exception {
+        String priceString = editTextPrice.getText().toString();
+        String countString = editTextStock.getText().toString();
+        if (priceString.equals("") || countString.equals("") || albumDetail.getReleaseDate()==null){
+            ((MainActivity) getActivity()).customDialog("Please fill all fields.");
+            throw new Exception("Missing fields");
+        }
+        Double price = Double.parseDouble(priceString);
+        int count = Integer.parseInt(countString);
+        if (price>20000 || count > 20000) {
+            ((MainActivity) getActivity()).customDialog("Big numbers.");
+            throw new Exception("Big numbers.");
+        }
         price = price* 100;
-        albumDetail.setArtist(editTextArtist.getText().toString());
         albumDetail.setPrice(price.intValue());
-        albumDetail.setCount(Integer.parseInt(editTextStock.getText().toString()));
+        albumDetail.setCount(count);
+
+        albumDetail.setArtist(editTextArtist.getText().toString());
         albumDetail.setSales(checkBox.isChecked());
 
         albumDetail.setCountry(spinnerRegion.getSelectedItemPosition());

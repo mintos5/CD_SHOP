@@ -24,4 +24,10 @@
         android:icon="@drawable/ic_add_white"
         app:showAsAction="never"
         android:visible="false"/>
+    <item
+        android:id="@+id/action_modify_album_URL"
+        android:title="Change image URL"
+        android:icon="@drawable/ic_add_white"
+        app:showAsAction="never"
+        android:visible="false"/>
 </menu>
