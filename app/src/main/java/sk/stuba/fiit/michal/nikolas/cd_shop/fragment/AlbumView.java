@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import io.socket.client.Socket;
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.activity.MainActivity;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.SongAdapter;
@@ -49,6 +50,7 @@ import sk.stuba.fiit.michal.nikolas.cd_shop.model.DecadeEnum;
 import sk.stuba.fiit.michal.nikolas.cd_shop.model.GenresEnum;
 import sk.stuba.fiit.michal.nikolas.cd_shop.model.RegionEnum;
 import sk.stuba.fiit.michal.nikolas.data.api.ApiRequest;
+import sk.stuba.fiit.michal.nikolas.data.api.ApiRequest2;
 import sk.stuba.fiit.michal.nikolas.data.model.Album;
 
 /**
@@ -139,8 +141,9 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
     @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
-        if ( ((MainActivity)getActivity()).connectionTest() ){
-            new AsyncGetDetail().execute(albumId);
+        MainActivity mainActivity = (MainActivity)getActivity();
+        if (mainActivity.connectionTest() ){
+            new AsyncGetDetail(mainActivity.getSocket()).execute(albumId);
         }
         else {
             swipeRefreshLayout.setRefreshing(false);
@@ -215,11 +218,14 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
         if (id == R.id.action_save) {
             saveText();
-            if ( ((MainActivity)getActivity()).connectionTest() ){
+            MainActivity mainActivity = (MainActivity)getActivity();
+            if (mainActivity.connectionTest() ){
                 if (albumId!=null) {
-                    new AsyncUpdateDetail(this).execute(albumDetail);
+                    new AsyncUpdateDetail(mainActivity.getSocket(),this).execute(albumDetail);
                 }
-                    new AsyncCreateDetail(this).execute(albumDetail);
+                else {
+                    new AsyncCreateDetail(mainActivity.getSocket(),this).execute(albumDetail);
+                }
             }
         }
 
@@ -412,21 +418,28 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
     }
 
+
+
     private class AsyncGetDetail extends AsyncTask<String, Void, Album> {
 
         private Exception error;
+        private Socket socket;
 
-        public  AsyncGetDetail() {
+        public  AsyncGetDetail(Socket socket) {
+            this.socket = socket;
         }
 
         @Override
         protected Album doInBackground(String... params) {
             try {
-                return ApiRequest.getDetailAlbum(params[0]);
+                return ApiRequest2.getDetailAlbum(socket,params[0]);
             } catch (IOException e) {
                 e.printStackTrace();
                 error = e;
             } catch (ApiException e) {
+                e.printStackTrace();
+                error = e;
+            } catch (InterruptedException e) {
                 e.printStackTrace();
                 error = e;
             }
@@ -457,20 +470,26 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
         private Exception error;
         private Fragment fragment;
+        private Socket socket;
 
-        public  AsyncUpdateDetail(Fragment fragment) {
+        public  AsyncUpdateDetail(Socket socket,Fragment fragment) {
+            this.socket = socket;
             this.fragment = fragment;
+
         }
 
         @Override
         protected Void doInBackground(Album... params) {
             try {
-                ApiRequest.updateAlbum(params[0]);
+                ApiRequest2.updateAlbum(socket, params[0]);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ApiException e) {
                 error = e;
                 e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                error = e;
             }
             return null;
         }
@@ -492,8 +511,10 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
 
         private Exception error;
         private Fragment fragment;
+        private Socket socket;
 
-        public  AsyncCreateDetail(Fragment fragment) {
+        public  AsyncCreateDetail(Socket socket,Fragment fragment) {
+            this.socket = socket;
             this.fragment = fragment;
         }
 
@@ -501,13 +522,17 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         @Override
         protected String doInBackground(Album... params) {
             try {
-                ApiRequest.updateAlbum(params[0]);
-                // return ApiRequest.createAlbum(params[0]);
+                params[0].setDescription("empty");
+                params[0].setUrl("https://api.backendless.com/F9615D38-AE50-A389-FF5E-8BD658331900/v1/files/cd_case.jpg");
+                return ApiRequest2.createAlbum(socket,params[0]);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ApiException e) {
                 error = e;
                 e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                error = e;
             }
             return "test";
         }
@@ -529,9 +554,12 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
             }
             Bundle transData = new Bundle();
             transData.putString("id", id);
-            fragment.setArguments(transData);
             FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ft.detach(fragment).attach(fragment).commit();
+            fragment = new AlbumView();
+            fragment.setArguments(transData);
+            ft.replace(R.id.frame, fragment)
+                    .addToBackStack("tag");
+            ft.commit();
         }
 
     }

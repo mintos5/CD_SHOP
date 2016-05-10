@@ -35,6 +35,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.socket.client.Socket;
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.activity.MainActivity;
 import sk.stuba.fiit.michal.nikolas.cd_shop.adapter.TestAdapter;
@@ -43,6 +44,7 @@ import sk.stuba.fiit.michal.nikolas.cd_shop.model.DecadeEnum;
 import sk.stuba.fiit.michal.nikolas.cd_shop.model.GenresEnum;
 import sk.stuba.fiit.michal.nikolas.cd_shop.model.RegionEnum;
 import sk.stuba.fiit.michal.nikolas.data.api.ApiRequest;
+import sk.stuba.fiit.michal.nikolas.data.api.ApiRequest2;
 import sk.stuba.fiit.michal.nikolas.data.model.Album;
 
 
@@ -151,12 +153,13 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
     @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
-        if ( ((MainActivity)getActivity()).connectionTest() ){
+        MainActivity mainActivity = (MainActivity)getActivity();
+        if ( mainActivity.connectionTest() ){
             if (enumType== null) {
-                new AsyncGet().execute("");
+                new AsyncGet(mainActivity.getSocket()).execute("");
             }
             else {
-                new AsyncGet().execute(enumType, new Integer(enumNum).toString());
+                new AsyncGet(mainActivity.getSocket()).execute(enumType, new Integer(enumNum).toString());
             }
         }
         else {
@@ -192,7 +195,10 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
                 hashArray[i]=alb1.getRecordHash();
                 i++;
             }
-            new AsyncDelete(this).execute(hashArray);
+            MainActivity mainActivity = (MainActivity)getActivity();
+            if ( mainActivity.connectionTest() ){
+                new AsyncDelete(mainActivity.getSocket(), this).execute(hashArray);
+            }
             mode.finish();
             return true;
         }
@@ -224,23 +230,29 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
 
     private class AsyncGet extends AsyncTask<String, Void, List<Album>> {
         private Exception error;
-        public  AsyncGet() {
+        private Socket socket;
+        public  AsyncGet(Socket socket) {
+            this.socket = socket;
         }
 
         @Override
         protected List<Album> doInBackground(String... params) {
+
             try {
                 if (params[0].equals("")) {
-                    return ApiRequest.getList(params[0]);
+                    return ApiRequest2.getList(socket);
                 }
                 if (params[0].equals("country")) {
-                    return ApiRequest.getSortList(params[0]+"="+params[1]);
+                    return ApiRequest2.getList(socket);
+                    //return ApiRequest.getSortList(params[0]+"="+params[1]);
                 }
                 if (params[0].equals("decade")) {
-                    return ApiRequest.getSortList(params[0]+"="+params[1]);
+                    return ApiRequest2.getList(socket);
+                    //return ApiRequest.getSortList(params[0]+"="+params[1]);
                 }
                 if (params[0].equals("genre")) {
-                    return ApiRequest.getSortList(params[0]+"="+params[1]);
+                    return ApiRequest2.getList(socket);
+                    //return ApiRequest.getSortList(params[0]+"="+params[1]);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -248,6 +260,8 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
             } catch (ApiException e) {
                 e.printStackTrace();
                 error = e;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
             return null;
         }
@@ -275,17 +289,23 @@ public class Albums extends Fragment implements SwipeRefreshLayout.OnRefreshList
 
         private Exception error;
         private Fragment fragment;
-        public  AsyncDelete(Fragment fragment) {
+        private Socket socket;
+
+        public  AsyncDelete(Socket socket,Fragment fragment) {
             this.fragment = fragment;
+            this.socket = socket;
         }
 
         @Override
         protected Void doInBackground(String... params) {
             try {
                 for (String param1 : params) {
-                    ApiRequest.deletAlbum(param1);
+                    ApiRequest2.deletAlbum(socket,param1);
                 }
             } catch (ApiException e) {
+                e.printStackTrace();
+                error = e;
+            } catch (InterruptedException e) {
                 e.printStackTrace();
                 error = e;
             }

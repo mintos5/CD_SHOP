@@ -24,13 +24,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+import sk.stuba.fiit.michal.nikolas.cd_shop.exception.ApiException;
 import sk.stuba.fiit.michal.nikolas.cd_shop.fragment.AlbumView;
 import sk.stuba.fiit.michal.nikolas.cd_shop.fragment.Albums;
 import sk.stuba.fiit.michal.nikolas.cd_shop.fragment.Decades;
 import sk.stuba.fiit.michal.nikolas.cd_shop.fragment.Genres;
 import sk.stuba.fiit.michal.nikolas.cd_shop.R;
 import sk.stuba.fiit.michal.nikolas.cd_shop.fragment.Regions;
+import sk.stuba.fiit.michal.nikolas.data.api.ApiRequest2;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -39,12 +45,18 @@ public class MainActivity extends AppCompatActivity
     public boolean offline;
     private Bitmap cover;
 
+    private Socket socket;
+
     public Bitmap getCover() {
         return cover;
     }
 
     public void setCover(Bitmap cover) {
         this.cover = cover;
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 
     @Override
@@ -68,6 +80,50 @@ public class MainActivity extends AppCompatActivity
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.frame, new Albums()).commit();
         }
+        //vytvorenie socketu...
+        IO.Options opts = new IO.Options();
+        opts.secure = false;
+        opts.port = 1341;
+        opts.reconnection = true;
+        opts.forceNew = true;
+        opts.timeout = 5000;
+        opts.reconnectionAttempts = 3;
+
+        try {
+            socket = IO.socket("http://sandbox.touch4it.com:1341/?__sails_io_sdk_version=0.12.1",opts);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                System.out.println("CONNECTED TO SANDBOX");
+                ApiRequest2.open();
+            }
+        });
+
+        socket.on(Socket.EVENT_CONNECT_ERROR, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                int retries = ApiRequest2.getRetries();
+                retries++;
+                ApiRequest2.setRetries(retries);
+                System.out.println(args[0]);
+                if (retries == 4) {
+                    retries = 0;
+                    ApiRequest2.setError(new ApiException(500));
+                    ApiRequest2.open();
+                }
+            }
+        });
+        socket.connect();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        socket.disconnect();
+        socket.off();
     }
 
     @Override
