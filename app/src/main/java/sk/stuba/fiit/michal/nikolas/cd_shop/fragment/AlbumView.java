@@ -566,7 +566,9 @@ public class AlbumView extends ListFragment implements SwipeRefreshLayout.OnRefr
         protected String doInBackground(Album... params) {
             try {
                 params[0].setDescription("empty");
-                params[0].setUrl("https://api.backendless.com/F9615D38-AE50-A389-FF5E-8BD658331900/v1/files/cd_case.jpg");
+                if (params[0].getUrl() == null) {
+                    params[0].setUrl("https://api.backendless.com/F9615D38-AE50-A389-FF5E-8BD658331900/v1/files/cd_case.jpg");
+                }
                 return ApiRequest2.createAlbum(socket,params[0]);
             } catch (IOException e) {
                 e.printStackTrace();

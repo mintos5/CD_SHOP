@@ -69,22 +69,19 @@ public class ApiRequest2 {
 
         synchronized(connectObj) {
             while(ApiRequest2.isTest() == false) {
-                System.out.println("Testujem test");
+                System.out.println("Waiting for connection");
                 if (!sock.connected()){
                     sock.connect();
                 }
                 connectObj.wait();
-                System.out.println("Testujem test2");
             }
         }
         if (error == null) {
             sock.emit(event, jObj,ack);
-
             synchronized(eventObj) {
                 while(ApiRequest2.isEventTest() == false) {
-                    System.out.println("Testujem test3");
+                    System.out.println("Waiting for ACK");
                     eventObj.wait();
-                    System.out.println("Testujem test4");
                 }
                 ApiRequest2.setEventTest(false);
             }
@@ -153,7 +150,6 @@ public class ApiRequest2 {
         return null;
     }
 
-
     public static void deletAlbum(Socket socket,String hash) throws ApiException, InterruptedException {
         JSONObject delQuery = new JSONObject();
         try {
@@ -203,7 +199,7 @@ public class ApiRequest2 {
             @Override
             public void call(Object... os) {
                 if (os[0] != null) {
-                    System.out.println(os[0]);
+                    //System.out.println(os[0]);
                     JSONObject jsonAll = null;
                     try {
                         jsonAll = new JSONObject(os[0].toString());
